@@ -1,0 +1,12 @@
+{
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["jest"]
+  },
+  "compilerOptions": {
+    "maxNodeModuleJsDepth": 2,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES6",
+    "module": "commonjs"
+  }
+}

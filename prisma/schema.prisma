@@ -1,0 +1,1840 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RegisteredModel {
+  id         Int       @id @default(autoincrement())
+  phone      String
+  code       Int
+  created_at DateTime  @default(now())
+  expires_at DateTime?
+}
+
+model validateClient {
+  id         Int      @id @default(autoincrement())
+  owner_id   Int
+  type       String // advisor, estate_agent
+  phone      String
+  code       Int
+  created_at DateTime @default(now())
+}
+
+model Client {
+  id                              Int                            @id @default(autoincrement())
+  webinar_provider_id             Int?
+  name                            String                         @default("")
+  score                           Int                            @default(0)
+  surname                         String                         @default("")
+  phone                           String                         @unique
+  key                             String                         @default("")
+  email                           String                         @default("")
+  username                        String                         @default("")
+  password                        String?                        @default("")
+  type                            String                         @default("client")
+  roles                           String[]                       @default(["client"]) // client && estate_agent
+  avatar                          String?                        @default("")
+  token                           String                         @default("")
+  validate_email                  Boolean                        @default(false)
+  status                          String                         @default("active")
+  has_update_direct               Boolean                        @default(false) // direct_link
+  has_update_cafebazar            Boolean                        @default(false) // cafebazar
+  has_update_myket                Boolean                        @default(false) // myket
+  has_update_google_play          Boolean                        @default(false) // google_play
+  has_update_general_notification Boolean                        @default(true)
+  created_at                      DateTime                       @default(now())
+  updated_at                      DateTime                       @default(now())
+  last_login_time                 DateTime                       @default(now())
+  webinars                        Webinar[]
+  installed_version               String                         @default("")
+  contacts                        Contact[]
+  real_state_agents               RealEstateAgents[]
+  real_estate_agent_dmins         RealEstateAgentAdmins?
+  event_rooms                     EventRooms[]
+  event_groups                    EventGroups[]
+  realEstate_ads                  RealEstateAds[]
+  real_estate_agentComments       RealEstateAgentComments[]
+  real_estate_advisor             RealEstateAdvisors?
+  real_Estate_advisors_comments   RealEstateAdvisorsComments[]
+  real_estate_chat_starter        ChatRealEstateHistory[]        @relation("ChatsStarter")
+  real_estate_chat_participant    ChatRealEstateHistory[]        @relation("ChatsParticipant")
+  messenger_starter               ChatMessengerHistory[]         @relation("MessengerStarter")
+  messenger_participant           ChatMessengerHistory[]         @relation("MessengerParticipant")
+  channel_real_estate_members     ChannelRealEstateMembers[]
+  messenger_channles_members      MessengerChannlesMembers[]
+  client_gifs                     clientGifs[]
+  report_bugs                     ReportBugs[]
+  province                        Provinces?                     @relation(fields: [provincesId], references: [id])
+  city                            Cities?                        @relation(fields: [citiesId], references: [id])
+  provincesId                     Int?                           @default(14)
+  citiesId                        Int?                           @default(443)
+  ReportViolations                ReportViolations[]
+  ReferralCodes                   ReferralHistorry[]
+  ChatMessengerMessages           ChatMessengerMessages[]
+  MessengerGroupsMembers          MessengerGroupsMembers[]
+  MessengerGroupsMessages         MessengerGroupsMessages[]
+  HistoryOfScores                 HistoryOfScores[]
+  BinstaAccounts                  BinstaAccounts[]
+  ServicesComments                ServicesComments[]
+  ServicesCommentLikes            ServicesCommentLikes[]
+  DailyClientLogins               DailyClientLogins[]
+  Storefront                      Storefront[]
+  notification_tokens             clientNotificaionTokens[]
+  ReceivePrizes                   ReceivePrizes[]
+  MessengerChannels               MessengerChannels[]
+  DailyMissionsLogs               DailyMissionsLogs[]
+  MessengerChannelsMessages       MessengerChannelsMessages[]
+  MessengerSaveMessageMessages    MessengerSaveMessageMessages[]
+  myCity                          MyCityModel[]
+  bookmarkCityLocations           BookmarkMyCityLocation[]
+  ClientAdSettings                ClientAdSettings[]
+  masterModel                     MastersModel[]
+  masterComments                  MasterComments[]
+  MasterProjectComments           MasterProjectComments[]
+  MasterProjectCommentLikes       MasterProjectCommentLikes?     @relation(fields: [masterProjectCommentLikesId], references: [id])
+  masterProjectCommentLikesId     String?
+  BookmarkMasters                 BookmarkMasters[]
+  MarketplaceMessages             MarketplaceMessages[]
+  MarketplaceChatStarter          MarketplaceMessengerHistory[]  @relation("MarketplaceChatStarter")
+  MarketplaceChatParticipant      MarketplaceMessengerHistory[]  @relation("MarketplaceChatParticipant")
+  SuspiciousBehaviosForAds        SuspiciousBehaviosForAds[]
+  FilteredNotification_Ads        FilteredNotification_Ads[]
+  EstimatePriceAds                EstimatePriceAds[]
+  StorefrontBookmark              StorefrontBookmark[]
+}
+
+model clientNotificaionTokens {
+  id                 String   @id @unique @default(uuid())
+  notification_token String
+  device_info        String   @default("")
+  client             Client   @relation(fields: [client_id], references: [id])
+  client_id          Int
+  created_at         DateTime @default(now())
+}
+
+model userNotificaionTokens {
+  id                 String   @id @unique @default(uuid())
+  notification_token String
+  device_info        String   @default("")
+  client             users    @relation(fields: [client_id], references: [id])
+  client_id          Int
+  created_at         DateTime @default(now())
+}
+
+model Operator_realEstateAgents {
+  id         Int      @id @default(autoincrement())
+  provinces  Int[]    @default([14])
+  cities     Int[]    @default([443])
+  created_at DateTime @default(now())
+  client_id  Int
+}
+
+model clientGifs {
+  id         Int      @id @default(autoincrement())
+  file       String
+  key        String
+  client     Client   @relation(fields: [client_id], references: [id])
+  client_id  Int
+  created_at DateTime @default(now())
+}
+
+model ChatRealEstateHistory {
+  id                Int      @id @default(autoincrement())
+  client_id         Int      @default(0)
+  chat_type         String   @default("persoanl") // persoanl, estate_agent
+  type              String   @default("starter") // starter, participant
+  starter           Client   @relation("ChatsStarter", fields: [starter_id], references: [id])
+  starter_id        Int
+  participant       Client   @relation("ChatsParticipant", fields: [participant_id], references: [id])
+  participant_id    Int
+  created_at        DateTime @default(now())
+  last_message_time DateTime @default(now())
+  key               String
+  status            String   @default("pending")
+}
+
+model ChatRealEstateHistoryMessages {
+  id             Int       @id @default(autoincrement())
+  client_id      Int
+  destination_id Int
+  message_side   String    @default("") // starter, participant
+  key            String?
+  type           String // video, voice, music, sticker, text, image, gif, doc
+  content        String    @default("") // text, file url
+  caption        String    @default("")
+  seen           Boolean   @default(false)
+  mode           String    @default("normal") // normal, edited
+  is_replied     Boolean   @default(false)
+  reply_to_id    Int       @default(0)
+  size           Int       @default(0)
+  length         Float     @default(0)
+  thumbnail      String    @default("")
+  created_at     DateTime  @default(now())
+  received_at    DateTime?
+}
+
+model ChannelRealEstateAgent {
+  id                 Int                                @id @default(autoincrement())
+  real_estate_agent  RealEstateAgents                   @relation(fields: [agent_id], references: [id])
+  agent_id           Int                                @default(0)
+  key                String
+  last_message_time  DateTime                           @default(now())
+  created_at         DateTime                           @default(now())
+  type               String                             @default("normal") // normal, association
+  priority           String                             @default("normal") // normal, high
+  tag                String                             @default("normal") // normal, guard, fast
+  number_of_messages Int                                @default(0)
+  messages           ChannelRealEstateHistoryMessages[]
+  members            ChannelRealEstateMembers[]
+}
+
+model ChannelRealEstateHistoryMessages {
+  id          Int                    @id @default(autoincrement())
+  key         String?
+  type        String // video, voice, music, sticker, text, image, gif, doc
+  content     String                 @default("") // text, file url
+  caption     String                 @default("")
+  mode        String                 @default("normal") // normal, edited
+  is_replied  Boolean                @default(false)
+  reply_to_id Int                    @default(0)
+  size        Int                    @default(0)
+  length      Float                  @default(0)
+  thumbnail   String                 @default("")
+  created_at  DateTime               @default(now())
+  seen_number Int                    @default(0)
+  channel     ChannelRealEstateAgent @relation(fields: [channel_id], references: [id])
+  channel_id  Int
+}
+
+model ChannelRealEstateMembers {
+  id                      Int                    @id @default(autoincrement())
+  number_of_read_messages Int                    @default(0)
+  client                  Client?                @relation(fields: [client_id], references: [id])
+  client_id               Int?
+  channel                 ChannelRealEstateAgent @relation(fields: [channel_id], references: [id])
+  channel_id              Int
+  created_at              DateTime               @default(now())
+}
+
+model Webinar {
+  id             Int      @id @default(autoincrement())
+  webinar_id     Int
+  owner_id       Int?
+  title          String
+  description    String
+  type           String
+  event_link     String
+  proceeding     String   @default("") @db.Text
+  tag            String   @default("")
+  status         String   @default("active")
+  start_by_admin Int      @default(0)
+  is_unlimited   Int      @default(1)
+  guest_count    Int      @default(100)
+  guest_access   Int      @default(0)
+  created_at     DateTime @default(now())
+  started_at     String
+  start_time     String
+  end_time       String
+  year           Int?
+  month          Int?
+  client         Client[]
+  guests         Guest[]
+}
+
+model Guest {
+  id           Int     @id @default(autoincrement())
+  client_id    Int?
+  userid       Int?
+  display_name String  @default("active")
+  phone        String  @default("active")
+  role         String  @default("active")
+  webinar      Webinar @relation(fields: [webinar_id], references: [id])
+  webinar_id   Int
+}
+
+model Contact {
+  id           Int      @id @default(autoincrement())
+  display_name String
+  phone        String
+  client       Client   @relation(fields: [client_id], references: [id])
+  client_id    Int
+  createdAt    DateTime @default(now())
+}
+
+model Logger {
+  id             Int      @id @default(autoincrement())
+  method         String?
+  baseUrl        String?
+  status_code    Int?
+  content_length String?  @default("")
+  response_time  String?
+  user_agent     String?
+  ip             String?
+  created_at     DateTime @default(now())
+}
+
+model Slider {
+  id         Int      @id @default(autoincrement())
+  title      String
+  thumbnail  String
+  status     String   @default("active")
+  tag        String   @default("home")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model Banners {
+  id         Int      @id @default(autoincrement())
+  title      String
+  thumbnail  String
+  url        String?
+  status     String   @default("active")
+  tag        String   @default("home")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model Provinces {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  slug               String
+  cities             Cities[]
+  real_estate_agents RealEstateAgents[]
+  realEstate_ads     RealEstateAds[]
+  clients            Client[]
+  Storefront         Storefront[]
+  MyCity             MyCityModel[]
+  MastersModel       MastersModel[]
+}
+
+model Cities {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  slug               String
+  province           Provinces          @relation(fields: [province_id], references: [id])
+  province_id        Int
+  real_estate_agents RealEstateAgents[]
+  realEstate_ads     RealEstateAds[]
+  clients            Client[]
+  Storefront         Storefront[]
+  myCity             MyCityModel[]
+  MastersModel       MastersModel[]
+}
+
+model RealEstateAgents {
+  id                       Int                       @id @default(autoincrement())
+  tracking_code            String?
+  name                     String
+  phone                    String                    @default("")
+  validate_phone           Boolean                   @default(false)
+  avatar                   String?                   @default("")
+  license                  String?                   @default("")
+  license_status           String                    @default("pending") // pending || approved || rejected
+  status                   String                    @default("inactive") // active || inactive
+  score                    Float                     @default(0) // 1 - 5
+  total_score              Int                       @default(0)
+  number_of_ads            Int                       @default(0) // 0
+  created_at               DateTime                  @default(now())
+  approved_at              DateTime?
+  client                   Client                    @relation(fields: [client_id], references: [id])
+  client_id                Int
+  province                 Provinces                 @relation(fields: [province_id], references: [id])
+  province_id              Int
+  city                     Cities                    @relation(fields: [city_id], references: [id])
+  city_id                  Int
+  real_estate_agent_admins RealEstateAgentAdmins[]
+  comments                 RealEstateAgentComments[]
+  real_estate_advisors     RealEstateAdvisors[]
+  channels                 ChannelRealEstateAgent[]
+  published_count          Int                       @default(autoincrement())
+  approved_count           Int                       @default(0)
+  rejected_count           Int                       @default(0)
+  published_ad_time        DateTime                  @default(now())
+}
+
+model RealEstateAdvisors {
+  id                   Int                               @id @default(autoincrement())
+  tracking_code        String?
+  phone                String                            @default("")
+  validate_phone       Boolean                           @default(false)
+  avatar               String?                           @default("")
+  status               String                            @default("active") // active, inactive
+  score                Int                               @default(0)
+  total_score          Int                               @default(0)
+  biography            String                            @default("")
+  color                String                            @default("red")
+  permissions          String[]                          @default([])
+  comment_visibility   Boolean                           @default(false)
+  number_of_ads        Int                               @default(0)
+  total_customers      Int                               @default(0)
+  keywords             String[]                          @default([])
+  client               Client                            @relation(fields: [client_id], references: [id])
+  client_id            Int                               @unique
+  real_estate_agent    RealEstateAgents                  @relation(fields: [real_estate_agent_id], references: [id])
+  real_estate_agent_id Int
+  comments             RealEstateAdvisorsComments[]
+  active_areas         RealEstateAdvisorsActiveAreas[]
+  filtered_words       RealEstateAdvisorsFilteredWords[]
+}
+
+model RealEstateAdvisorsActiveAreas {
+  id         Int                @id @default(autoincrement())
+  title      String
+  advisor    RealEstateAdvisors @relation(fields: [advisor_id], references: [id])
+  advisor_id Int
+}
+
+model RealEstateAdvisorsFilteredWords {
+  id         Int                @id @default(autoincrement())
+  title      String
+  advisor    RealEstateAdvisors @relation(fields: [advisor_id], references: [id])
+  advisor_id Int
+}
+
+model RealEstateAdvisorsComments {
+  id                  Int                @id @default(autoincrement())
+  comment             String             @default("")
+  score               Float // 1-5
+  status              String             @default("approved") // pending, approved, rejected
+  created_at          DateTime           @default(now())
+  approved_at         DateTime           @default(now()) @updatedAt()
+  client              Client             @relation(fields: [client_id], references: [id])
+  client_id           Int
+  real_estate_advisor RealEstateAdvisors @relation(fields: [advisor_id], references: [id])
+  advisor_id          Int
+}
+
+model RealEstateAgentComments {
+  id                Int              @id @default(autoincrement())
+  comment           String           @default("")
+  score             Float // 1-5
+  status            String           @default("approved") // pending, approved, rejected
+  client            Client           @relation(fields: [client_id], references: [id])
+  client_id         Int
+  real_estate_agent RealEstateAgents @relation(fields: [agent_id], references: [id])
+  agent_id          Int
+  created_at        DateTime         @default(now())
+  approved_at       DateTime         @default(now()) @updatedAt()
+}
+
+model RealEstateAgentAdmins {
+  id                Int              @id @default(autoincrement())
+  client            Client           @relation(fields: [client_id], references: [id])
+  client_id         Int              @unique
+  real_estate_agent RealEstateAgents @relation(fields: [agent_id], references: [id])
+  agent_id          Int
+  color             String
+  permissions       String[]         @default([])
+  status            String           @default("active") // active, inactive
+  categories        String[]         @default([])
+  cities            String[]         @default([])
+  created_at        DateTime         @default(now())
+}
+
+model EventRooms {
+  id          Int              @id @default(autoincrement())
+  webinar_id  Int
+  owner_id    Int
+  title       String
+  type        String
+  event_link  String
+  guest_count Int              @default(0)
+  tag         String           @default("")
+  status      String           @default("active")
+  created_at  DateTime         @default(now())
+  clients     Client[]
+  guests      EventRoomUsers[]
+}
+
+model EventRoomUsers {
+  id            Int         @id @default(autoincrement())
+  client_id     Int?
+  userid        Int?
+  display_name  String      @default("active")
+  phone         String      @default("active")
+  role          String      @default("active")
+  event_room    EventRooms? @relation(fields: [event_room_id], references: [id])
+  event_room_id Int?
+}
+
+model EventGroups {
+  id         Int      @id @default(autoincrement())
+  webinar_id Int
+  owner_id   Int
+  title      String
+  event_link String
+  tag        String   @default("")
+  status     String   @default("active")
+  created_at DateTime @default(now())
+  clients    Client[]
+}
+
+model RealEstateAdItems {
+  id                    Int                   @id @default(autoincrement())
+  value                 String
+  advertisement_setting RealEstateAdsSettings @relation(fields: [setting_id], references: [id])
+  setting_id            Int
+  advertisement         RealEstateAds         @relation(fields: [ad_id], references: [id])
+  ad_id                 Int
+}
+
+model RealEstateAdsSettings {
+  id          Int                 @id @default(autoincrement())
+  field_name  String
+  type        String // sale, presell, collaboration, rent
+  is_active   Boolean             @default(true)
+  required    Boolean             @default(true)
+  field_type  String // input_string,input_number, list, toggle
+  values      String[]            @default([])
+  sort_number Int                 @default(autoincrement())
+  status      String              @default("active") // active, inactive
+  key         String              @default(uuid())
+  items       RealEstateAdItems[]
+  icon        String              @default("")
+}
+
+model RealEstateAdForm {
+  id          String                    @id @default(cuid())
+  title       String
+  categories  RealEstateAdSubCategory[]
+  description String                    @db.Text
+  items       RealEstateAdFormItems[]
+}
+
+model RealEstateAdFormItems {
+  id                       String                            @id @default(cuid())
+  field_name               String
+  is_active                Boolean                           @default(true)
+  required                 Boolean                           @default(true)
+  field_type               String // input_string,input_number, list, toggle
+  values                   String[]                          @default([])
+  sort_number              Int                               @default(autoincrement())
+  status                   String                            @default("active") // active, inactive
+  key                      String                            @default(uuid())
+  form                     RealEstateAdForm                  @relation(fields: [form_id], references: [id])
+  form_id                  String
+  items                    RealEstateAdFormValue[]
+  icon                     String                            @default("")
+  filter_notification_list FilteredNotification_Ads_Values[]
+}
+
+model RealEstateAdFormValue {
+  id            String                @id @default(cuid())
+  value         String
+  form          RealEstateAdFormItems @relation(fields: [form_id], references: [id])
+  form_id       String
+  advertisement RealEstateAds         @relation(fields: [ad_id], references: [id])
+  ad_id         Int
+}
+
+model RealEstateAdMainCategory {
+  id                      String                    @id @default(cuid())
+  type                    String                    @default("sale") // sale, rent, participation, short_rent
+  title                   String
+  status                  String                    @default("active")
+  RealEstateAdSubCategory RealEstateAdSubCategory[]
+  RealEstateAds           RealEstateAds[]
+}
+
+model RealEstateAdSubCategory {
+  id            String                   @id @default(cuid())
+  title         String
+  category      RealEstateAdMainCategory @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  form          RealEstateAdForm?        @relation(fields: [formId], references: [id])
+  formId        String?
+  RealEstateAds RealEstateAds[]
+}
+
+model RealEstateAds {
+  id            Int                       @id @default(autoincrement())
+  tag           String                    @default("mr-building") // mr-building, divar
+  category      RealEstateAdMainCategory? @relation(fields: [categoryId], references: [id])
+  categoryId    String?
+  subCategory   RealEstateAdSubCategory?  @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String?
+  province      Provinces                 @relation(fields: [province_id], references: [id])
+  province_id   Int
+  city          Cities                    @relation(fields: [city_id], references: [id])
+  city_id       Int
+  status        String                    @default("pending") // pending, approved, rejected, active, inactive, invalidate, on_sale
+
+  owner_name  String?
+  owner_phone String?
+
+  tracking_code              String
+  seller_type                String    @default("individual") // individual || real_estate_agent, real_estate_advisor
+  is_applicant               Boolean   @default(false)
+  display_contact            Boolean   @default(true)
+  title                      String?
+  description                String?
+  lat_item                   Float     @default(0)
+  long_item                  Float     @default(0)
+  year_built                 Int       @default(1300)
+  size                       Int       @default(0)
+  sale_price                 BigInt    @default(0)
+  deposit_price              BigInt    @default(0)
+  rent_price                 BigInt    @default(0)
+  number_of_rooms            Int       @default(0)
+  max_capicity               Int       @default(0)
+  normal_days_price          BigInt    @default(0)
+  weekend_price              BigInt    @default(0)
+  special_days_price         BigInt    @default(0)
+  cost_per_additional_person BigInt    @default(0)
+  extra_people               Int       @default(0)
+  price_status               String    @default("fair") // fair, high, low
+  price_rating               Int       @default(3) // 1-5
+  created_at                 DateTime  @default(now())
+  approved_at                DateTime?
+  rejected_at                DateTime?
+  is_timed                   Boolean   @default(false)
+  expired_at                 DateTime?
+  client                     Client?   @relation(fields: [client_id], references: [id])
+  client_id                  Int?
+  agent_id                   Int       @default(0)
+  advisor_id                 Int       @default(0)
+
+  area                    String?
+  agent_valuation_request Boolean @default(false)
+
+  items        RealEstateAdItems[]
+  robotAdItems RealEstateAdItems_sample_robotScraper[]
+  media        RealEstateAdvertisements[]
+
+  RealEstateAdForms        RealEstateAdFormValue[]
+  Reasons                  ReasonsForRejectingAds[]
+  ReasonsForDeletedAds     ReasonsForDeletedAds[]
+  SuspiciousBehaviosForAds SuspiciousBehaviosForAds[]
+  EstimatePriceAds         EstimatePriceAds[]
+}
+
+model EstimatePriceAds {
+  id             String        @id @default(cuid())
+  estimate_price String
+  client         Client        @relation(fields: [clientId], references: [id])
+  clientId       Int
+  ad             RealEstateAds @relation(fields: [adId], references: [id])
+  adId           Int
+}
+
+model RealEstateAdItems_sample_robotScraper {
+  id            String         @id @default(cuid())
+  field_name    String?
+  value         String?
+  icon          String?
+  RealEstateAds RealEstateAds? @relation(fields: [ad_id], references: [id])
+  ad_id         Int?
+}
+
+model ReasonsAdTemplate {
+  id         String   @id @default(cuid())
+  type       String   @default("rejected") // rejected, deleted
+  text       String
+  status     String   @default("active") // active, inactive
+  userId     Int
+  created_at DateTime @default(now())
+}
+
+model ReasonsForRejectingAds {
+  id   String         @id @default(cuid())
+  text String
+  ad   RealEstateAds? @relation(fields: [adId], references: [id])
+  adId Int?
+}
+
+model ReasonsForDeletedAds {
+  id   String         @id @default(cuid())
+  text String
+  ad   RealEstateAds? @relation(fields: [adId], references: [id])
+  adId Int?
+}
+
+model SuspiciousBehaviosForAds {
+  id       String         @id @default(cuid())
+  text     String
+  ad       RealEstateAds? @relation(fields: [adId], references: [id])
+  adId     Int?
+  client   Client?        @relation(fields: [clientId], references: [id])
+  clientId Int?
+}
+
+model RealEstateAdApproval {
+  id         Int      @id @default(autoincrement())
+  ad_id      Int
+  user_id    Int
+  user_type  String // dashboard_admin, app_admin, operator_estate_agent
+  status     String   @default("approved") // approved, rejected
+  text       String   @default("")
+  created_at DateTime @default(now())
+}
+
+model RealEstateAdvertisements {
+  id            Int           @id @default(autoincrement())
+  file_name     String?
+  file_type     String? // image, video
+  sort_number   Int           @default(autoincrement())
+  priority      String? // primary, normal
+  thumbnail     String?
+  advertisement RealEstateAds @relation(fields: [ad_id], references: [id])
+  ad_id         Int
+}
+
+model RealEstateAdsTempFiles {
+  id        Int     @id @default(autoincrement())
+  file_type String
+  file_name String
+  thumbnail String?
+}
+
+model ForceUpdate {
+  id                     Int      @id @default(autoincrement())
+  installed_version_type String   @default("direct") // direct, cafebazar, myket
+  title                  String   @default("")
+  items                  String[] @default([])
+  content                String   @default("") @db.Text
+  file_name              String? // string || null
+  indirect_link          String? // string || null
+  version                String
+  required               Boolean  @default(false)
+  status                 String   @default("active")
+  total_installs         Int      @default(0)
+  user_id                Int
+  created_at             DateTime @default(now())
+}
+
+model GeneralNotification {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String   @db.Text
+  link       String
+  created_at DateTime @default(now())
+}
+
+model GeneralNotificationSettings {
+  id         Int      @id @default(autoincrement())
+  enabled    Boolean  @default(true)
+  created_at DateTime @default(now())
+}
+
+model ReportBugs {
+  id         Int      @id @default(autoincrement())
+  content    String   @default("")
+  type       String   @default("bug")
+  source     String   @default("general")
+  image      String?
+  voice      String?
+  created_at DateTime @default(now())
+  client     Client   @relation(fields: [client_id], references: [id])
+  client_id  Int
+}
+
+model ReportViolations {
+  id          Int      @id @default(autoincrement())
+  item_id     String
+  description String
+  type        String
+  created_at  DateTime @default(now())
+  client      Client   @relation(fields: [client_id], references: [id])
+  client_id   Int
+}
+
+model Missions {
+  id              Int      @id @default(autoincrement())
+  key             String   @default("register") // register, approvalAd, referral_code
+  title           String
+  description     String   @db.Text
+  point           Int
+  is_limited      Boolean  @default(false)
+  number_of_hours Int      @default(0)
+  status          String   @default("active") // active, inactive
+  number_of_used  Int      @default(0)
+  created_at      DateTime @default(now())
+  creator_id      Int?
+}
+
+model DailyMissionsLogs {
+  id          String   @id @unique @default(uuid())
+  missionType String
+  client      Client   @relation(fields: [clientID], references: [id])
+  clientID    Int
+  usedAt      DateTime
+}
+
+model ReceiveMissions {
+  id          Int      @id @default(autoincrement())
+  mission_id  Int
+  client_id   Int
+  title       String
+  description String   @db.Text
+  point       Int
+  received_at DateTime @default(now())
+  status      String   @default("active") // active, inactive
+}
+
+model Prizes {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String         @db.Text
+  point       Int
+  thumbnail   String
+  url         String         @default("")
+  status      String         @default("active") // active, inactive
+  created_at  DateTime       @default(now())
+  expired_at  DateTime?
+  creator_id  Int?
+  coupons     PrizeCoupons[]
+}
+
+model PrizeCoupons {
+  id         String    @id @default(uuid())
+  coupon     String
+  status     String // active, used
+  created_at DateTime  @default(now())
+  used_at    DateTime?
+  prize      Prizes    @relation(fields: [prizeId], references: [id])
+  prizeId    Int
+}
+
+model ReceivePrizes {
+  id          Int       @id @default(autoincrement())
+  coupon      String    @default("")
+  title       String
+  description String    @db.Text
+  point       Int
+  thumbnail   String
+  received_at DateTime  @default(now())
+  expired_at  DateTime?
+  url         String    @default("")
+  client      Client?   @relation(fields: [clientId], references: [id])
+  clientId    Int?
+  prizeId     Int       @default(0)
+}
+
+model TermsOfServices {
+  id         Int      @id @default(autoincrement())
+  content    String   @default("") @db.Text
+  key        String   @default("terms_of_use")
+  created_at DateTime @default(now())
+}
+
+model ReferralCodes {
+  id                Int                @id @default(autoincrement())
+  owner_id          Int
+  code              String
+  referral_historry ReferralHistorry[]
+}
+
+model ReferralHistorry {
+  id          Int           @id @default(autoincrement())
+  referral    ReferralCodes @relation(fields: [referral_id], references: [id])
+  referral_id Int
+  client      Client        @relation(fields: [client_id], references: [id])
+  client_id   Int
+  created_at  DateTime      @default(now())
+}
+
+model ChatMessengerHistory {
+  id                Int      @id @default(autoincrement())
+  key               String   @default(uuid())
+  client_id         Int      @default(0)
+  type              String   @default("starter") // starter, participant
+  starter           Client   @relation("MessengerStarter", fields: [starter_id], references: [id])
+  starter_id        Int
+  participant       Client   @relation("MessengerParticipant", fields: [participant_id], references: [id])
+  participant_id    Int
+  status            String   @default("pending")
+  last_message_time DateTime @default(now())
+  created_at        DateTime @default(now())
+}
+
+model MessengerBlockHistory {
+  id         Int      @id @default(autoincrement())
+  clientId   Int
+  targetId   Int
+  created_at DateTime @default(now())
+}
+
+model ChatMessengerMessages {
+  id                     Int     @id @default(autoincrement())
+  client                 Client  @relation(fields: [client_id], references: [id])
+  client_id              Int
+  destination_id         Int
+  chat_key               String
+  notification           Boolean @default(false)
+  type                   String // video, voice, music, sticker, text, image, gif, doc
+  content                String  @default("") // text, file url
+  caption                String  @default("")
+  seen                   Boolean @default(false)
+  size                   Int     @default(0)
+  length                 Float   @default(0)
+  thumbnail              String  @default("")
+  is_blocked             Boolean @default(false)
+  is_replied             Boolean @default(false)
+  is_edited              Boolean @default(false)
+  action_type            String  @default("normal") // normal, pin, mention, join, left, forward
+  is_forwarded           Boolean @default(false)
+  forward_from           String  @default("") // user | channel
+  forward_message_id     Int?
+  forward_from_client_id Int?
+
+  forward_from_channel    MessengerChannels?      @relation(fields: [forward_from_channel_id], references: [id])
+  forward_from_channel_id Int?
+  have_reaction           Boolean                 @default(false)
+  is_deleted              Boolean                 @default(false)
+  reaction                String                  @default("")
+  created_at              DateTime                @default(now())
+  received_at             DateTime?
+  reply_to                ChatMessengerMessages?  @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id             Int?                    @map("reply_to_id")
+  replied_by              ChatMessengerMessages[] @relation("RepliesTo")
+}
+
+model ChatMessengerMessageDeleted {
+  id         Int      @id @default(autoincrement())
+  client_id  Int
+  message_id Int
+  chat_key   String
+  created_at DateTime @default(now())
+}
+
+// save message
+model MessengerSaveMessageHistory {
+  id                Int                            @id @default(autoincrement())
+  key               String                         @default(uuid())
+  client_id         Int                            @default(0)
+  last_message_time DateTime                       @default(now())
+  created_at        DateTime                       @default(now())
+  messages          MessengerSaveMessageMessages[]
+}
+
+model MessengerSaveMessageMessages {
+  id                 Int     @id @default(autoincrement())
+  key                String
+  type               String // video, voice, music, sticker, text, image, gif, doc
+  content            String  @default("") // text, file url
+  caption            String  @default("")
+  size               Int     @default(0)
+  length             Float   @default(0)
+  thumbnail          String  @default("")
+  is_replied         Boolean @default(false)
+  is_edited          Boolean @default(false)
+  action_type        String  @default("normal") // normal, pin, mention, join, left, forward
+  is_forwarded       Boolean @default(false)
+  forward_from       String  @default("") // user | channel
+  forward_message_id Int?
+
+  have_reaction Boolean @default(false)
+  reaction      String  @default("")
+
+  saveMessage     MessengerSaveMessageHistory @relation(fields: [save_message_id], references: [id])
+  save_message_id Int
+
+  forward_from_client    Client? @relation(fields: [forward_from_client_id], references: [id])
+  forward_from_client_id Int?
+
+  forward_from_channel    MessengerChannels? @relation(fields: [forward_from_channel_id], references: [id])
+  forward_from_channel_id Int?
+
+  created_at DateTime @default(now())
+
+  reply_to    MessengerSaveMessageMessages?  @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id Int?                           @map("reply_to_id")
+  replied_by  MessengerSaveMessageMessages[] @relation("RepliesTo")
+}
+
+// messenger channel
+model MessengerChannels {
+  id                           Int                                  @id @default(autoincrement())
+  key                          String
+  username                     String?
+  owner                        Client?                              @relation(fields: [owner_id], references: [id])
+  owner_id                     Int?
+  tag                          String                               @default("normal") // normal, real_estate
+  verified_channel             Boolean                              @default(false)
+  type                         String                               @default("public") // public, private
+  title                        String
+  description                  String
+  avatar                       String                               @default("")
+  notification                 Boolean                              @default(false)
+  last_message_time            DateTime                             @default(now())
+  number_of_messages           Int                                  @default(0)
+  status                       String                               @default("active") //  active, inactive
+  created_at                   DateTime                             @default(now())
+  messages                     MessengerChannelsMessages[]
+  members                      MessengerChannlesMembers[]
+  request                      MessengerChannelsRequestTheOfficial?
+  ChatMessengerMessages        ChatMessengerMessages[]
+  MessengerGroupsMessages      MessengerGroupsMessages[]
+  MessengerSaveMessageMessages MessengerSaveMessageMessages[]
+}
+
+model MessengerChannelsRequestTheOfficial {
+  id               String            @id @default(cuid())
+  description      String
+  verified_channel Boolean           @default(false)
+  status           String            @default("pending") // pending, approved, rejected
+  ownerId          Int
+  channel          MessengerChannels @relation(fields: [channelId], references: [id])
+  channelId        Int               @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime?
+}
+
+model MessengerChannelsMessages {
+  id                      Int                         @id @default(autoincrement())
+  key                     String
+  owner_id                Int
+  type                    String // video, voice, music, sticker, text, image, gif, doc
+  content                 String                      @default("") // text, file url
+  caption                 String                      @default("")
+  size                    Int                         @default(0)
+  length                  Float                       @default(0)
+  thumbnail               String                      @default("")
+  is_replied              Boolean                     @default(false)
+  is_edited               Boolean                     @default(false)
+  action_type             String                      @default("normal") // normal, pin, mention, join, left, forward
+  is_forwarded            Boolean                     @default(false)
+  forward_from            String                      @default("") // user | channel
+  forward_message_id      Int?
+  forward_from_client     Client?                     @relation(fields: [forward_from_client_id], references: [id])
+  forward_from_client_id  Int?
+  forward_from_channel_id Int?
+  created_at              DateTime                    @default(now())
+  reply_to                MessengerChannelsMessages?  @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id             Int?                        @map("reply_to_id")
+  replied_by              MessengerChannelsMessages[] @relation("RepliesTo")
+  seen_number             Int                         @default(0)
+  channel                 MessengerChannels           @relation(fields: [channel_id], references: [id])
+  channel_id              Int
+}
+
+model MessengerChannlesMembers {
+  id                      Int               @id @default(autoincrement())
+  number_of_read_messages Int               @default(0)
+  member_is_muted         Boolean           @default(false)
+  role                    String            @default("member") // owner, member, admin
+  permissions             String[]          @default([]) // owner | permission list
+  creator_id              Int               @default(0)
+  parent_ids              Int[]             @default([])
+  client                  Client?           @relation(fields: [client_id], references: [id])
+  client_id               Int?
+  channel                 MessengerChannels @relation(fields: [channel_id], references: [id])
+  channel_id              Int
+  created_at              DateTime          @default(now())
+}
+
+model MessengerGroups {
+  id                 Int                       @id @default(autoincrement())
+  key                String
+  username           String?
+  owner_id           Int
+  type               String                    @default("public") // public, private
+  title              String
+  description        String
+  avatar             String                    @default("")
+  notification       Boolean                   @default(false)
+  last_message_time  DateTime                  @default(now())
+  number_of_messages Int                       @default(0)
+  created_at         DateTime                  @default(now())
+  messages           MessengerGroupsMessages[]
+  members            MessengerGroupsMembers[]
+}
+
+model MessengerGroupsMessages {
+  id                      Int                       @id @default(autoincrement())
+  key                     String
+  owner                   Client?                   @relation(fields: [owner_id], references: [id])
+  owner_id                Int?
+  type                    String // video, voice, music, sticker, text, image, gif, doc
+  content                 String                    @default("") // text, file url
+  caption                 String                    @default("")
+  size                    Int                       @default(0)
+  length                  Float                     @default(0)
+  thumbnail               String                    @default("")
+  is_replied              Boolean                   @default(false)
+  is_edited               Boolean                   @default(false)
+  is_deleted              Boolean                   @default(false)
+  action_type             String                    @default("normal") // normal, pin, mention, join, left, forward
+  is_forwarded            Boolean                   @default(false)
+  forward_from            String                    @default("") // user | channel
+  forward_message_id      Int?
+  forward_from_client_id  Int?
+  forward_from_channel    MessengerChannels?        @relation(fields: [forward_from_channel_id], references: [id])
+  forward_from_channel_id Int?
+  created_at              DateTime                  @default(now())
+  reply_to                MessengerGroupsMessages?  @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id             Int?                      @map("reply_to_id")
+  replied_by              MessengerGroupsMessages[] @relation("RepliesTo")
+  seen_number             Int                       @default(0)
+  group                   MessengerGroups           @relation(fields: [group_id], references: [id])
+  group_id                Int
+}
+
+model MessengerGroupsMembers {
+  id                      Int             @id @default(autoincrement())
+  number_of_read_messages Int             @default(0)
+  member_is_muted         Boolean         @default(false)
+  role                    String          @default("member") // owner, member, admin
+  permissions             String[]        @default([]) // owner | permission list
+  creator_id              Int             @default(0)
+  parent_ids              Int[]           @default([])
+  client                  Client?         @relation(fields: [client_id], references: [id])
+  client_id               Int?
+  group                   MessengerGroups @relation(fields: [group_id], references: [id])
+  group_id                Int
+  created_at              DateTime        @default(now())
+}
+
+model HistoryOfScores {
+  id         Int      @id @default(autoincrement())
+  title      String
+  score      Int      @default(0)
+  type       String   @default("")
+  action     String   @default("increase") // increase, decrease
+  client     Client?  @relation(fields: [client_id], references: [id])
+  client_id  Int?
+  created_at DateTime @default(now())
+}
+
+// ******** Binsta ********
+model BinstaAccounts {
+  id                                Int                    @id @default(autoincrement())
+  fullname                          String
+  username                          String                 @unique
+  accountUniqId                     Int                    @unique
+  accountType                       String // public, private
+  biography                         String
+  avatar                            String?                @default("")
+  client                            Client                 @relation(fields: [clientId], references: [id])
+  clientId                          Int
+  createdAt                         DateTime               @default(now())
+  BinstaPosts                       BinstaPosts[]
+  BinstaPostLiked                   BinstaPostLiked[]
+  BinstaPostComments                BinstaPostComments[]
+  BinstaFollowersStarterAccount     BinstaFollowers[]      @relation("BinstaFollowersStarterAccount")
+  BinstaFollowersParticipantAccount BinstaFollowers[]      @relation("BinstaFollowersParticipantAccount")
+  BinstaStories                     BinstaStories[]
+  BinstaRecivedStories              BinstaRecivedStories[]
+}
+
+model BinstaPosts {
+  id                 Int                  @id @default(autoincrement())
+  postUniqId         Int                  @unique
+  caption            String
+  mentions           String[]             @default([])
+  viewCount          Int                  @default(0)
+  binstaAccount      BinstaAccounts       @relation(fields: [accountId], references: [id])
+  accountId          Int
+  createdAt          DateTime             @default(now())
+  BinstaPostMedias   BinstaPostMedias[]
+  BinstaPostLiked    BinstaPostLiked[]
+  BinstaPostComments BinstaPostComments[]
+}
+
+model BinstaPostMedias {
+  id            Int         @id @default(autoincrement())
+  filename      String
+  fileType      String // image, video
+  coverFilename String
+  deuration     Int         @default(0)
+  sort          Int         @default(1) // 1-10
+  post          BinstaPosts @relation(fields: [postId], references: [id])
+  postId        Int
+  createdAt     DateTime    @default(now())
+}
+
+model BinstaPostLiked {
+  id            Int            @id @default(autoincrement())
+  binstaAccount BinstaAccounts @relation(fields: [accountId], references: [id])
+  accountId     Int
+  post          BinstaPosts    @relation(fields: [postId], references: [id])
+  postId        Int
+  createdAt     DateTime       @default(now())
+}
+
+model BinstaPostComments {
+  id            Int                  @id @default(autoincrement())
+  content       String               @default("")
+  likeCount     Int                  @default(0)
+  replyTo       BinstaPostComments?  @relation("RepliesTo", fields: [replyToId], references: [id])
+  replyToId     Int?                 @map("reply_to_id")
+  repliedBy     BinstaPostComments[] @relation("RepliesTo")
+  binstaAccount BinstaAccounts       @relation(fields: [accountId], references: [id])
+  accountId     Int
+  post          BinstaPosts          @relation(fields: [postId], references: [id])
+  postId        Int
+  createdAt     DateTime             @default(now())
+}
+
+model BinstaFollowers {
+  id               Int            @id @default(autoincrement())
+  starterAccount   BinstaAccounts @relation("BinstaFollowersStarterAccount", fields: [starterAccountId], references: [id])
+  starterAccountId Int
+  targetAccount    BinstaAccounts @relation("BinstaFollowersParticipantAccount", fields: [targetAccountId], references: [id])
+  targetAccountId  Int
+  createdAt        DateTime       @default(now())
+}
+
+model BinstaStories {
+  id                   Int                    @id @default(autoincrement())
+  filename             String
+  caption              String
+  mentions             String[]               @default([])
+  binstaAccount        BinstaAccounts         @relation(fields: [accountId], references: [id])
+  accountId            Int
+  createdAt            DateTime               @default(now())
+  BinstaRecivedStories BinstaRecivedStories[]
+}
+
+model BinstaRecivedStories {
+  id            Int            @id @default(autoincrement())
+  binstaAccount BinstaAccounts @relation(fields: [accountId], references: [id])
+  accountId     Int
+  binstaStories BinstaStories  @relation(fields: [storyId], references: [id])
+  storyId       Int
+  createdAt     DateTime       @default(now())
+}
+
+// ****** admin users section ******
+model AdminUserRoleCategories {
+  id            String                             @id @unique @default(cuid())
+  title         String
+  key           String
+  creator_id    Int                                @default(0)
+  createdAt     DateTime                           @default(now())
+  updatedAt     DateTime                           @default(now())
+  permissions   AdminUserRoleCategoryPermissions[]
+  assignedRoles AdminUserRolesProfileCategories[]
+}
+
+model AdminUserRoleCategoryPermissions {
+  id                                  String                                    @id @unique @default(cuid())
+  title                               String
+  key                                 String
+  category                            AdminUserRoleCategories                   @relation(fields: [categoryID], references: [id])
+  categoryID                          String
+  creator_id                          Int                                       @default(0)
+  createdAt                           DateTime                                  @default(now())
+  updatedAt                           DateTime                                  @default(now())
+  AdminUserMainRoleCategoryPermisions AdminUserRolesProfileCategoryPermisions[]
+}
+
+model AdminUserRolesProfile {
+  id          String                                    @id @unique @default(cuid())
+  title       String
+  description String                                    @db.Text
+  key         String
+  creator_id  Int                                       @default(0)
+  status      String                                    @default("active") // active, inactive
+  createdAt   DateTime                                  @default(now())
+  updatedAt   DateTime                                  @default(now())
+  category    AdminUserRolesProfileCategories[]
+  userRoles   AdminUserRoles[]
+  permissions AdminUserRolesProfileCategoryPermisions[]
+}
+
+model AdminUserRolesProfileCategories {
+  id          String                                    @id @unique @default(uuid())
+  category    AdminUserRoleCategories                   @relation(fields: [categoryID], references: [id])
+  categoryID  String
+  role        AdminUserRolesProfile                     @relation(fields: [roleID], references: [id])
+  roleID      String
+  creator_id  Int                                       @default(0)
+  createdAt   DateTime                                  @default(now())
+  updatedAt   DateTime                                  @default(now())
+  permissions AdminUserRolesProfileCategoryPermisions[]
+}
+
+model AdminUserRolesProfileCategoryPermisions {
+  id           String                           @id @unique @default(uuid())
+  category     AdminUserRolesProfileCategories  @relation(fields: [categoryID], references: [id])
+  categoryID   String
+  permission   AdminUserRoleCategoryPermissions @relation(fields: [permissionID], references: [id])
+  permissionID String
+  role         AdminUserRolesProfile            @relation(fields: [roleID], references: [id])
+  roleID       String
+  creator_id   Int                              @default(0)
+  createdAt    DateTime                         @default(now())
+  updatedAt    DateTime                         @default(now())
+}
+
+model users {
+  id                  Int                     @id @default(autoincrement())
+  uniqKey             String                  @default("")
+  name                String                  @default("")
+  email               String
+  phone               String                  @default("")
+  password            String
+  roles               AdminUserRoles[]
+  avatar              String?                 @default("")
+  token               String?
+  refresh_token       String?
+  status              String                  @default("active")
+  created_at          DateTime                @default(now())
+  updated_at          DateTime                @default(now())
+  creator_id          Int?
+  notification_tokens userNotificaionTokens[]
+}
+
+model AdminUserRoles {
+  id     String                @id @default(uuid())
+  role   AdminUserRolesProfile @relation(fields: [roleID], references: [id])
+  roleID String
+  user   users                 @relation(fields: [userID], references: [id])
+  userID Int
+}
+
+// ****** Services Module ******
+model Services {
+  id               String             @id @unique @default(uuid())
+  description      String             @default("") @db.Text
+  type             String
+  ServicesComments ServicesComments[]
+}
+
+model ServicesMedia {
+  id        String @id @unique @default(uuid())
+  type      String
+  fileType  String
+  file      String
+  creatorID Int
+}
+
+model ServicesComments {
+  id                   String                 @id @unique @default(uuid())
+  content              String                 @default("") // text
+  status               String                 @default("approved") // approved, rejected
+  is_replied           Boolean                @default(false)
+  reply_to             ServicesComments?      @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id          String?                @map("reply_to_id")
+  replied_by           ServicesComments[]     @relation("RepliesTo")
+  createdAt            DateTime               @default(now())
+  approvedAt           DateTime               @default(now())
+  rejectedAt           DateTime               @default(now())
+  service              Services               @relation(fields: [serviceID], references: [id])
+  serviceID            String
+  client               Client                 @relation(fields: [clientID], references: [id])
+  clientID             Int
+  ServicesCommentLikes ServicesCommentLikes[]
+}
+
+model ServicesCommentLikes {
+  id        String           @id @unique @default(uuid())
+  client    Client           @relation(fields: [clientID], references: [id])
+  clientID  Int
+  comment   ServicesComments @relation(fields: [commentID], references: [id])
+  commentID String
+}
+
+model DailyClientLogins {
+  id            String   @id @unique @default(uuid())
+  client        Client   @relation(fields: [clientID], references: [id])
+  clientID      Int
+  loginDate     DateTime
+  lastLoginDate DateTime
+}
+
+// ********** MarketPlace **********
+model MarketPlaceBrands {
+  id              String               @id @unique @default(uuid())
+  number_of_sales Int                  @default(0)
+  title           String
+  color           String               @default("red")
+  score           Int                  @default(0)
+  total_score     Int                  @default(0)
+  secondTitle     String               @default("")
+  description     String               @default("")
+  thumbnail       String
+  status          String               @default("active") // active, inactive
+  userID          Int
+  createdAt       DateTime             @default(now())
+  products        StorefrontProducts[]
+}
+
+model MarketPlaceMainCategory {
+  id              String                   @id @unique @default(uuid())
+  number_of_sales Int                      @default(0)
+  title           String
+  thumbnail       String
+  status          String                   @default("active") // active, inactive
+  userID          Int
+  createdAt       DateTime                 @default(now())
+  items           MarketPlaceSubCategory[]
+  products        StorefrontProducts[]
+  storefront      Storefront[]
+}
+
+model MarketPlaceSubCategory {
+  id              String                          @id @default(cuid())
+  number_of_sales Int                             @default(0)
+  title           String
+  category        MarketPlaceMainCategory         @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  products        StorefrontProducts[]
+  form            MarketplaceProductFeaturesForm? @relation(fields: [formId], references: [id])
+  formId          String?
+}
+
+model MarketplaceProductFeaturesForm {
+  id          String                       @id @default(cuid())
+  title       String
+  categories  MarketPlaceSubCategory[]
+  description String                       @db.Text
+  items       MarketplaceProductFeatures[]
+}
+
+model MarketplaceProductFeatures {
+  id          String                            @id @default(cuid())
+  field_name  String
+  is_active   Boolean                           @default(true)
+  required    Boolean                           @default(true)
+  field_type  String // input_string, list
+  values      String[]                          @default([])
+  sort_number Int                               @default(autoincrement())
+  status      String                            @default("active") // active, inactive
+  key         String                            @default(uuid())
+  items       MarketplaceProductFeatureValues[]
+  form        MarketplaceProductFeaturesForm?   @relation(fields: [formId], references: [id])
+  formId      String?
+}
+
+model MarketplaceProductFeatureValues {
+  id        String                     @id @default(cuid())
+  value     String
+  feature   MarketplaceProductFeatures @relation(fields: [featureId], references: [id])
+  featureId String
+  product   StorefrontProducts         @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model Storefront {
+  id                 String                   @id @unique @default(uuid())
+  trackingCode       String                   @default("")
+  name               String
+  description        String                   @db.Text
+  color              String
+  phone              String                   @default("")
+  validate_phone     Boolean                  @default(false)
+  avatar             String?                  @default("")
+  avatar_thumbnail   String?                  @default("")
+  license            String?                  @default("")
+  license_status     String                   @default("pending") // pending || approved || rejected
+  status             String                   @default("inactive") // active || inactive
+  score              Float                    @default(0) // 1 - 5
+  total_score        Int                      @default(0)
+  number_of_products Int                      @default(0) // 0
+  number_of_sales    Int                      @default(0) // 0
+  latitude           Float                    @default(0)
+  longitude          Float                    @default(0)
+  created_at         DateTime                 @default(now())
+  approved_at        DateTime?
+  rejected_at        DateTime?
+  client             Client                   @relation(fields: [client_id], references: [id])
+  client_id          Int
+  province           Provinces                @relation(fields: [province_id], references: [id])
+  province_id        Int
+  city               Cities                   @relation(fields: [city_id], references: [id])
+  city_id            Int
+  category           MarketPlaceMainCategory? @relation(fields: [categoryId], references: [id])
+  categoryId         String?
+  products           StorefrontProducts[]
+  StorefrontBookmark StorefrontBookmark[]
+}
+
+model StorefrontProducts {
+  id              String                            @id @default(cuid())
+  trackingCode    String
+  title           String
+  description     String
+  score           Int                               @default(0)
+  unitOfSales     String
+  price           BigInt
+  hasDiscount     Boolean                           @default(false)
+  discountedPrice BigInt
+  colors          String[]                          @default([])
+  status          String                            @default("active")
+  numberOfSales   Int                               @default(0)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @default(now())
+  storefront      Storefront                        @relation(fields: [storefrontId], references: [id])
+  storefrontId    String
+  category        MarketPlaceMainCategory           @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  subCategory     MarketPlaceSubCategory            @relation(fields: [subCategoryId], references: [id])
+  subCategoryId   String
+  brand           MarketPlaceBrands                 @relation(fields: [brandId], references: [id])
+  brandId         String
+  features        MarketplaceProductFeatureValues[]
+  files           MarketplaceMediaFiles[]
+}
+
+model MarketplaceMediaFiles {
+  id          Int                 @id @default(autoincrement())
+  type        String              @default("temp") // temp, normal
+  thumbnail   String              @default("")
+  file_name   String
+  file_type   String // image, video
+  sort_number Int                 @default(autoincrement())
+  priority    String // primary, normal
+  product     StorefrontProducts? @relation(fields: [productId], references: [id])
+  productId   String?
+}
+
+model StorefrontBookmark {
+  id           String     @id @default(cuid())
+  client       Client     @relation(fields: [client_id], references: [id])
+  client_id    Int
+  storefront   Storefront @relation(fields: [storefrontId], references: [id])
+  storefrontId String
+}
+
+// ********** DB Backups **********
+model DbBackups {
+  id        String   @id @default(cuid())
+  filename  String
+  userId    Int
+  createdAt DateTime @default(now())
+}
+
+// MyCity
+model MyCityModel {
+  id              String                   @id @default(cuid())
+  category        String
+  title           String
+  description     String                   @default("") @db.Text
+  size            Int                      @default(0)
+  year_built      Int                      @default(0)
+  number_of_rooms Int                      @default(0)
+  status          String                   @default("active") // pending, active, rejected
+  renovation_tax  Boolean                  @default(false)
+  latitude        Float                    @default(0)
+  longitude       Float                    @default(0)
+  province        Provinces                @relation(fields: [province_id], references: [id])
+  province_id     Int
+  city            Cities                   @relation(fields: [city_id], references: [id])
+  city_id         Int
+  created_at      DateTime                 @default(now())
+  updated_at      DateTime                 @default(now())
+  client          Client                   @relation(fields: [clientId], references: [id])
+  clientId        Int
+  media           MyCityMedia[]
+  bookmarks       BookmarkMyCityLocation[]
+}
+
+model MyCityMedia {
+  id          String       @id @default(cuid())
+  tag         String       @default("file") // file, structural, architectural, facilities, crooky
+  type        String       @default("temp") // temp, file
+  file_name   String
+  file_type   String       @default("image") // image, video, file
+  sort_number Int          @default(autoincrement())
+  priority    String       @default("normal") // primary, normal
+  thumbnail   String?
+  myCity      MyCityModel? @relation(fields: [myCityId], references: [id])
+  myCityId    String?
+}
+
+model BookmarkMyCityLocation {
+  id        String      @id @default(cuid())
+  client    Client      @relation(fields: [client_id], references: [id])
+  client_id Int
+  myCity    MyCityModel @relation(fields: [myCityId], references: [id])
+  myCityId  String
+}
+
+// save ads settings for recive notifications
+model ClientAdSettings {
+  id                   String    @id @default(cuid())
+  title                String    @default("")
+  categoryId           String    @default("")
+  subCategoryId        String    @default("")
+  expired_at           DateTime?
+  year_built           Int       @default(0)
+  size                 Int       @default(0)
+  sale_price           BigInt    @default(0)
+  deposit_price        BigInt    @default(0)
+  rent_price           BigInt    @default(0)
+  provinceId           Int       @default(0)
+  cityId               Int       @default(0)
+  smsNotification      Boolean   @default(false)
+  whatsappNotification Boolean   @default(false)
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @default(now())
+  client               Client    @relation(fields: [client_id], references: [id])
+  client_id            Int
+}
+
+model FilteredNotification_Ads {
+  id                     String                            @id @default(cuid())
+  title                  String                            @default("")
+  categoryId             String                            @default("")
+  subCategoryId          String                            @default("")
+  expired_at             DateTime?
+  year_built_from        Int                               @default(0)
+  year_built_to          Int                               @default(0)
+  size_from              Int                               @default(0)
+  size_to                Int                               @default(0)
+  sale_price_from        BigInt                            @default(0)
+  sale_price_to          BigInt                            @default(0)
+  deposit_price_from     BigInt                            @default(0)
+  deposit_price_to       BigInt                            @default(0)
+  rent_price_from        BigInt                            @default(0)
+  rent_price_to          BigInt                            @default(0)
+  normal_days_price_from BigInt                            @default(0)
+  normal_days_price_to   BigInt                            @default(0)
+  number_of_rooms_from   Int                               @default(0)
+  number_of_rooms_to     Int                               @default(0)
+  max_capicity_from      Int                               @default(0)
+  max_capicity_to        Int                               @default(0)
+  provinceId             Int                               @default(0)
+  cityId                 Int                               @default(0)
+  smsNotification        Boolean                           @default(false)
+  whatsappNotification   Boolean                           @default(false)
+  created_at             DateTime                          @default(now())
+  updated_at             DateTime                          @default(now())
+  client                 Client                            @relation(fields: [client_id], references: [id])
+  client_id              Int
+  items                  FilteredNotification_Ads_Values[]
+}
+
+model FilteredNotification_Ads_Values {
+  id        String                   @id @default(cuid())
+  title     String
+  value     String
+  form      RealEstateAdFormItems    @relation(fields: [form_id], references: [id])
+  form_id   String
+  filter    FilteredNotification_Ads @relation(fields: [filter_id], references: [id])
+  filter_id String
+}
+
+// Inward Market Statistics
+model InwardMarketStatistics {
+  id         String   @id @default(cuid())
+  type       String   @default("gold") // gold, currency, cooin
+  key        Int      @default(0)
+  category   String   @default("")
+  title      String   @default("")
+  price      String   @default("")
+  variation  String   @default("")
+  max        String   @default("")
+  min        String   @default("")
+  created_at DateTime @default(now())
+}
+
+model WarningSignsBeforTransaction {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  created_at DateTime @default(now())
+}
+
+// Masters Model
+model MastersCategories {
+  id           String         @id @default(cuid())
+  title        String
+  status       String         @default("active") // active, inactive
+  created_at   DateTime       @default(now())
+  MastersModel MastersModel[]
+}
+
+model MastersModel {
+  id                String                       @id @default(cuid())
+  trackingCode      String
+  is_verified_phone Boolean                      @default(false)
+  score             Float                        @default(0) // 1-5
+  total_score       Int                          @default(0)
+  status            String                       @default("pending") // pending, active, inactive
+  created_at        DateTime                     @default(now())
+  updated_at        DateTime                     @default(now())
+  category          MastersCategories            @relation(fields: [categoryId], references: [id])
+  categoryId        String
+  client            Client                       @relation(fields: [client_id], references: [id])
+  client_id         Int
+  province          Provinces                    @relation(fields: [province_id], references: [id])
+  province_id       Int
+  city              Cities                       @relation(fields: [city_id], references: [id])
+  city_id           Int
+  comments          MasterComments[]
+  settings          MasterSettings[]
+  words             MasterFilteredWords[]
+  projects          MasterProjects[]
+  verificationPhone MasterVerificationPhone[]
+  reasons           ReasonsForRejectingMasters[]
+  profile           MasterProfile?
+  bookmarks         BookmarkMasters[]
+}
+
+model MasterProfile {
+  id                 String       @id @default(cuid())
+  fullname           String
+  phone              String
+  description        String       @db.Text
+  national_code      BigInt       @default(0)
+  postal_code        BigInt       @default(0)
+  age                Int          @default(0)
+  work_experience    Int          @default(0)
+  national_code_img  String
+  avatar             String
+  avatar_thumbnail   String
+  certificate        String?
+  certificate_status String? // pending, approved, rejected
+  master             MastersModel @relation(fields: [master_id], references: [id])
+  master_id          String       @unique
+}
+
+model ReasonsForRejectingMasters {
+  id        String       @id @default(cuid())
+  text      String
+  master    MastersModel @relation(fields: [master_id], references: [id])
+  master_id String
+}
+
+model MasterSettings {
+  id                      String       @id @default(cuid())
+  comment_visibility      Boolean      @default(true)
+  phone_number_visibility Boolean      @default(true)
+  chat_feature_enabled    Boolean      @default(false)
+  master                  MastersModel @relation(fields: [master_id], references: [id])
+  master_id               String
+}
+
+model MasterFilteredWords {
+  id        Int          @id @default(autoincrement())
+  title     String
+  master    MastersModel @relation(fields: [master_id], references: [id])
+  master_id String
+}
+
+model MasterVerificationPhone {
+  id         Int          @id @default(autoincrement())
+  phone      String
+  code       Int
+  created_at DateTime     @default(now())
+  master     MastersModel @relation(fields: [master_id], references: [id])
+  master_id  String
+}
+
+model MasterProjects {
+  id              String                      @id @default(cuid())
+  title           String?
+  description     String                      @db.Text
+  exployer_number Int?
+  master          MastersModel                @relation(fields: [master_id], references: [id])
+  master_id       String
+  files           MasterProjecFiles[]
+  comments        MasterProjectComments[]
+  likes           MasterProjectCommentLikes[]
+  status          String                      @default("active") // active, inactive
+  created_at      DateTime                    @default(now())
+}
+
+model MasterProjecFiles {
+  id          Int             @id @default(autoincrement())
+  tag         String          @default("file") // file, structural, architectural, facilities, crooky
+  type        String          @default("temp") // temp, file
+  file_name   String
+  file_type   String          @default("image") // image, video, file
+  sort_number Int             @default(autoincrement())
+  priority    String          @default("normal") // primary, normal
+  thumbnail   String?
+  project     MasterProjects? @relation(fields: [project_id], references: [id])
+  project_id  String?
+}
+
+model MasterComments {
+  id          String       @id @default(cuid())
+  comment     String       @default("")
+  score       Float // 1-5
+  status      String       @default("approved") // approved, rejected
+  client      Client       @relation(fields: [client_id], references: [id])
+  client_id   Int
+  master      MastersModel @relation(fields: [master_id], references: [id])
+  master_id   String
+  created_at  DateTime     @default(now())
+  approved_at DateTime     @default(now()) @updatedAt()
+}
+
+model MasterProjectComments {
+  id          String         @id @default(cuid())
+  comment     String         @default("")
+  score       Float // 1-5
+  status      String         @default("approved") // approved, rejected
+  client      Client         @relation(fields: [client_id], references: [id])
+  client_id   Int
+  project     MasterProjects @relation(fields: [project_id], references: [id])
+  project_id  String
+  created_at  DateTime       @default(now())
+  approved_at DateTime       @default(now()) @updatedAt()
+}
+
+model MasterProjectCommentLikes {
+  id         String         @id @default(cuid())
+  client     Client[]
+  project    MasterProjects @relation(fields: [project_id], references: [id])
+  project_id String
+}
+
+model BookmarkMasters {
+  id        String       @id @default(cuid())
+  client    Client       @relation(fields: [client_id], references: [id])
+  client_id Int
+  masters   MastersModel @relation(fields: [masterId], references: [id])
+  masterId  String
+}
+
+// marketplace messenger
+model MarketplaceMessengerHistory {
+  id                Int      @id @default(autoincrement())
+  key               String
+  client_id         Int      @default(0)
+  type              String   @default("starter") // starter, participant
+  chat_type         String   @default("persoanl") // persoanl, storefront
+  starter           Client   @relation("MarketplaceChatStarter", fields: [starter_id], references: [id])
+  starter_id        Int
+  participant       Client   @relation("MarketplaceChatParticipant", fields: [participant_id], references: [id])
+  participant_id    Int
+  status            String   @default("pending")
+  last_message_time DateTime @default(now())
+  created_at        DateTime @default(now())
+}
+
+model MarketplaceMessages {
+  id            Int                   @id @default(autoincrement())
+  client        Client                @relation(fields: [client_id], references: [id])
+  client_id     Int
+  key           String
+  notification  Boolean               @default(false)
+  type          String // video, voice, music, sticker, text, image, gif, doc
+  content       String                @default("") // text, file url
+  caption       String                @default("")
+  seen          Boolean               @default(false)
+  size          Int                   @default(0)
+  length        Float                 @default(0)
+  thumbnail     String                @default("")
+  is_blocked    Boolean               @default(false)
+  is_replied    Boolean               @default(false)
+  is_edited     Boolean               @default(false)
+  action_type   String                @default("normal") // normal, pin, mention, join, left, forward
+  have_reaction Boolean               @default(false)
+  is_deleted    Boolean               @default(false)
+  reaction      String                @default("")
+  created_at    DateTime              @default(now())
+  received_at   DateTime?
+  reply_to      MarketplaceMessages?  @relation("RepliesTo", fields: [reply_to_id], references: [id])
+  reply_to_id   Int?                  @map("reply_to_id")
+  replied_by    MarketplaceMessages[] @relation("RepliesTo")
+}
+
+model MarketplaceChatMessengerMessageDeleted {
+  id         Int      @id @default(autoincrement())
+  client_id  Int
+  message_id Int
+  chat_key   String
+  created_at DateTime @default(now())
+}
