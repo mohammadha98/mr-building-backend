@@ -1,0 +1,1 @@
+{"version":3,"file":"event-rooms.module.js","sourceRoot":"","sources":["../../../../../src/modules/v1/event-rooms/event-rooms.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,iEAAmF;AACnF,mEAAuF;AAKhF,IAAM,gBAAgB,GAAtB,MAAM,gBAAgB;CAAG,CAAA;AAAnB,gBAAgB;IAH5B,IAAA,eAAM,EAAC;QACN,OAAO,EAAE,CAAC,qCAAmB,EAAE,qCAAqB,CAAC;KACtD,CAAC;GACW,gBAAgB,CAAG;AAAnB,4CAAgB"}
