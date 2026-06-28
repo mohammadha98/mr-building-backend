@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+﻿import { Module } from "@nestjs/common";
 import { RealEstateAdsServiceApp } from "./real-estate-ads-service-app.service";
 import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
@@ -26,8 +26,8 @@ import SmsService from "src/modules/services/notifications/sms/SmsService";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: "localhost",
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         database: 10,
         ttl: 60,
         password:

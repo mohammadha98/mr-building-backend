@@ -6,11 +6,13 @@ import { RedisService } from "./redis.service";
   imports: [
     NestRedisModule.forRoot({
       config: {
-        host: process.env.REDIS_HOST || "redis",
+        host: 'remote-pishgaman.runflare.com',
         port: parseInt(process.env.REDIS_PORT, 10) || 6379,
         password: process.env.REDIS_PASSWORD || undefined,
         ...(process.env.REDIS_TLS === "true" && {
-          tls: {},
+          tls: {
+            
+          },
         }),
         lazyConnect: false,
         retryStrategy(times) {

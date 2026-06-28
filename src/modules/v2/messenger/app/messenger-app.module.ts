@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+﻿import { Module } from "@nestjs/common";
 import { MessengerController } from "./messenger.controller";
 import { PrismaService } from "../../../../../prisma/prisma.service";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
@@ -42,8 +42,8 @@ import { MessengerService } from "./messenger.service";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: "localhost",
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         database: 0,
         ttl: null,
         password:
