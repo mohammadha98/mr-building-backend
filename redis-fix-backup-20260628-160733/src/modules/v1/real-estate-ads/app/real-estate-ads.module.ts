@@ -1,11 +1,11 @@
-import { Module } from "@nestjs/common";
+﻿import { Module } from "@nestjs/common";
 import { RealEstateAdsServiceApp } from "./real-estate-ads-service-app.service";
 import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
 import { PrismaService } from "../../../../../prisma/prisma.service";
 import RealEstateAdsPostgresqlRepository from "../repositories/RealEstateAdsPostgresqlRepository";
-import { ClientModule } from "src/modules/v2/client/app/client.module";
-import { ClientService } from "src/modules/v2/client/app/client.service";
+import { ClientModule } from "src/modules/v1/client/app/client.module";
+import { ClientService } from "src/modules/v1/client/app/client.service";
 import RealEstateAdsTransformer from "./Transformer";
 import { NestjsFormDataModule } from "nestjs-form-data";
 import { CacheModule } from "@nestjs/cache-manager";
@@ -26,17 +26,12 @@ import SmsService from "src/modules/services/notifications/sms/SmsService";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
-        },
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         database: 10,
         ttl: 60,
         password:
-          process.env.APP_MODE !== 'development'
-            ? process.env.REDIS_PASSWORD
-            : undefined,
+          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
     ClientModule,

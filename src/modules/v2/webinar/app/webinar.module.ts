@@ -1,4 +1,4 @@
-﻿import { Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { WebinarService } from "./webinar.service";
 import { WebinarController } from "./webinar.controller";
 import { PrismaService } from "../../../../../prisma/prisma.service";
@@ -14,12 +14,17 @@ import { RedisClientOptions } from "redis";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        socket: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
+        },
         database: 15,
         ttl: 30,
         password:
-          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+          process.env.APP_MODE !== 'development'
+            ? process.env.REDIS_PASSWORD
+            : undefined,
       }),
     }),
   ],

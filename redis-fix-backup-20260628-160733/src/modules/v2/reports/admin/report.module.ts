@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+﻿import { Module } from "@nestjs/common";
 import { ReportController } from "./report.controller";
 import { PrismaService } from "../../../../../prisma/prisma.service";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
@@ -49,17 +49,12 @@ import UploadService from "src/modules/services/UploadService";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
-        },
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         database: 12,
         ttl: 60,
         password:
-          process.env.APP_MODE !== 'development'
-            ? process.env.REDIS_PASSWORD
-            : undefined,
+          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
   ],

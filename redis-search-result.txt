@@ -1,0 +1,684 @@
+﻿Redis connection points - 06/28/2026 15:59:16
+==================================================
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\client\app\dto\create-client.dto.ts
+----------------------------------------------------------------------
+       1: import { IsMobilePhone, IsString } from "class-validator";
+       3: export class CreateClientDto {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\client\app\dto\save-gif-client.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { ApiProperty } from "@nestjs/swagger";
+       5: export class SaveGifClientDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\client\app\dto\update-client.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { IsNumberString, IsOptional, IsString } from "class-validator";
+       4: import { ApiProperty } from "@nestjs/swagger";
+       6: export class UpdateClientDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\client\app\dto\update-profile.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { IsNumberString, IsOptional, IsString } from "class-validator";
+       4: import { ApiProperty } from "@nestjs/swagger";
+       6: export class UpdateClienProfiletDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\contacts\contacts.service.ts
+----------------------------------------------------------------------
+       1: import { Injectable } from "@nestjs/common";
+       2: import { CreateContactDto } from "./dto/CreateContactDto";
+       3: import { PrismaService } from "../../../../prisma/prisma.service";
+       4: import EventService from "src/modules/v1//webinar/provider/EventService";
+       5: import SmsService from "src/modules/services/notifications/sms/SmsService";
+       6: import { ClientService } from "src/modules/v1//client/app/client.service";
+       7: import IPagination from "src/commons/contracts/IPagination";
+       8: import IMetadata from "src/commons/contracts/IMetadata";
+       9: import ClientContactsTransformer from "./Transformer";
+      12: export class ContactsService {
+      25: async createNewContact(createClientContactDto: CreateContactDto) {
+      27: const contacts = createClientContactDto.contacts;
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\messenger\app\messenger-app.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { MessengerController } from "./messenger.controller";
+       3: import { PrismaService } from "../../../../../prisma/prisma.service";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { NestjsFormDataModule } from "nestjs-form-data";
+       6: import { ClientService } from "src/modules/v1//client/app/client.service";
+       7: import { ClientModule } from "src/modules/v1//client/app/client.module";
+       9: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      10: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      11: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      12: import MessageTransformer from "../../chat-real-estate/app/Transformer";
+      13: import MessengerAppTransformer from "../../messenger/app/Transformer";
+      14: import { MessengerChannelsService } from "../../messenger_channels/app/messenger-channels.service";
+      15: import { MessengerGroupsService } from "../../messenger_groups/app/messenger-groups.service";
+      16: import MessengerChannelTransformer from "../../messenger_channels/app/Transformer";
+      17: import MessengerGroupsTransformer from "../../messenger_groups/app/Transformer";
+      18: import UploadService from "src/modules/services/UploadService";
+      19: import { NotificationsService } from "../../notifications/app/notifications.service";
+      20: import { RealEstateAgentsService } from "../../real-estate-agents/app/real-estate-agents.service";
+      21: import RealEstateAgentsTransformer from "../../real-estate-agents/app/Transformer";
+      22: import RealEstateAgentsPostgresqlRepository from "../../real-estate-agents/repositories/RealEstateAgentsPostgresqlRepository";
+      23: import { ForceUpdateAdminModule } from "../../force-update/admin/force-update.module";
+      24: import { ForceUpdateService } from "../../force-update/admin/force-update.service";
+      25: import ForceUpdateTransformer from "../../force-update/admin/Transformer";
+      26: import RealEstateAdvisorTransformer from "../../real-estate-agents-advisors/app/Transformer";
+      27: import UserPrismaRepository from "../../users/admin/repositories/UserPrismaRepository";
+      28: import RealEstateAdminsTransformer from "../../real-estate-agents-admins/app/Transformer";
+      29: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      30: import { CacheModule } from "@nestjs/cache-manager";
+      31: import { RedisClientOptions } from "redis";
+      32: import * as redisStore from "cache-manager-redis-store";
+      33: import { MessengerSaveMessageAppModule } from "../../messenger-save-message/app/save-message-app.module";
+      34: import { MessengerSaveMessageService } from "../../messenger-save-message/app/save-message.service";
+      35: import { MessengerService } from "./messenger.service";
+      38: imports: [
+      42: CacheModule.registerAsync<RedisClientOptions>({
+      44: store: redisStore.redisStore as any,
+  !   45: host: process.env.REDIS_HOST,
+      46: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      49: password:
+      50: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      88: exports: [MessengerService, MessengerAppModule],
+      90: export class MessengerAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\real-estate-ads\app\real-estate-ads.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAdsServiceApp } from "./real-estate-ads-service-app.service";
+       3: import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { PrismaService } from "../../../../../prisma/prisma.service";
+       6: import RealEstateAdsPostgresqlRepository from "../repositories/RealEstateAdsPostgresqlRepository";
+       7: import { ClientModule } from "src/modules/v1/client/app/client.module";
+       8: import { ClientService } from "src/modules/v1/client/app/client.service";
+       9: import RealEstateAdsTransformer from "./Transformer";
+      10: import { NestjsFormDataModule } from "nestjs-form-data";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      16: import { RealEstateAdsService_robotScraper } from "../robotScraper/real-estate-ads.service";
+      17: import RealEstateAdsScraperTransformer from "../robotScraper/Transformer";
+      18: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      19: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      20: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      25: imports: [
+      26: CacheModule.registerAsync<RedisClientOptions>({
+      28: store: redisStore.redisStore as any,
+  !   29: host: process.env.REDIS_HOST,
+      30: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      33: password:
+      34: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      56: exports: [
+      61: CacheModule,
+      68: export class RealEstateAdsModuleApp {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\real-estate-ads\site\real-estate-ads.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAdsService } from "./real-estate-ads.service";
+       3: import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { PrismaService } from "../../../../../prisma/prisma.service";
+       6: import RealEstateAdsPostgresqlRepository from "../repositories/RealEstateAdsPostgresqlRepository";
+       7: import { ClientModule } from "src/modules/v1/client/app/client.module";
+       8: import { ClientService } from "src/modules/v1/client/app/client.service";
+       9: import RealEstateAdsTransformer from "./Transformer";
+      10: import { NestjsFormDataModule } from "nestjs-form-data";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      20: imports: [
+      21: CacheModule.registerAsync<RedisClientOptions>({
+      23: store: redisStore.redisStore as any,
+  !   24: host: process.env.REDIS_HOST,
+      25: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      28: password:
+      29: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      46: export class RealEstateAdsModuleSite {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\real-estate-agents-admins\app\real-estate-agents-admins.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAgentsAdminsService } from "./real-estate-agents-admins.service";
+       3: import { RealEstateAgentsAdminsController } from "./real-estate-agents-admins.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { ClientService } from "src/modules/v1/client/app/client.service";
+       6: import { ClientModule } from "src/modules/v1/client/app/client.module";
+       7: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       8: import { NestjsFormDataModule } from "nestjs-form-data";
+       9: import ClientTransformer from "src/modules/v1/client/app/Transformer";
+      10: import RealEstateAdminsTransformer from "./Transformer";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      15: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      16: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      19: imports: [
+      20: CacheModule.registerAsync<RedisClientOptions>({
+      22: store: redisStore.redisStore as any,
+  !   23: host: process.env.REDIS_HOST,
+      24: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      27: password:
+      28: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      46: export class RealEstateAgentsAdminsAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\real-estate-agents-advisors\app\real-estate-agents-advisors.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAgentsAdvisorsService } from "./real-estate-agents-advisors.service";
+       3: import { RealEstateAgentsAdvisorsController } from "./real-estate-agents-advisors.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { ClientService } from "src/modules/v1/client/app/client.service";
+       6: import { ClientModule } from "src/modules/v1/client/app/client.module";
+       7: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       8: import { NestjsFormDataModule } from "nestjs-form-data";
+       9: import ClientTransformer from "src/modules/v1/client/app/Transformer";
+      10: import RealEstateAdvisorTransformer from "./Transformer";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      16: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      19: imports: [
+      20: CacheModule.registerAsync<RedisClientOptions>({
+      22: store: redisStore.redisStore as any,
+  !   23: host: process.env.REDIS_HOST,
+      24: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      27: password:
+      28: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      45: exports: [
+      52: export class RealEstateAgentsAdvisorsAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\redis\redis.module.ts
+----------------------------------------------------------------------
+       1: import { Module, Inject, OnModuleInit, Logger } from "@nestjs/common";
+       2: import { RedisService } from "./redis.service";
+       3: import { RedisController } from "./redis.controller";
+       4: import { Cache } from "cache-manager";
+       5: import * as redisStore from "cache-manager-redis-store";
+       6: import { CACHE_MANAGER, CacheModule } from "@nestjs/cache-manager";
+       7: import type { RedisClientOptions } from "redis";
+      10: imports: [
+      11: CacheModule.registerAsync<RedisClientOptions>({
+      13: store: redisStore.redisStore as any,
+  !   14: host: process.env.REDIS_HOST,
+      15: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      16: password:
+      17: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      21: exports: [RedisModule, RedisService],
+      25: export class RedisModule implements OnModuleInit {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\reports\admin\report.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { ReportController } from "./report.controller";
+       3: import { PrismaService } from "../../../../../prisma/prisma.service";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import ReportBugsTransformer from "./Transformer";
+       6: import { ReportService } from "./report.service";
+       7: import ReportsTransformer from "./Transformer";
+       8: import { ClientService } from "src/modules/v1/client/admin/client.service";
+       9: import { ClientModule } from "src/modules/v1/client/admin/client.module";
+      10: import { WebinarService } from "src/modules/v1/webinar/app/webinar.service";
+      11: import { EventRoomsService } from "src/modules/v1/event-rooms/app/event-rooms.service";
+      12: import { eventGroupsService } from "src/modules/v1/events/group/app/event-groups.service";
+      14: import { RealEstateAgentsService } from "src/modules/v1/real-estate-agents/admin/real-estate-agents.service";
+      15: import { RealEstateAgentsAdvisorsService } from "src/modules/v1/real-estate-agents-advisors/admin/real-estate-agents-advisors.service";
+      16: import { ChannelRealEstateService } from "src/modules/v1/channel-real-estate/app/channel-real-estate.service";
+      17: import { ChatRealEstateService } from "src/modules/v1/chat-real-estate/app/chat-real-estate.service";
+      18: import RealEstateAgentsPostgresqlRepository from "src/modules/v1/real-estate-agents/repositories/RealEstateAgentsPostgresqlRepository";
+      19: import RealEstateAdvisorTransformer from "src/modules/v1/real-estate-agents-advisors/admin/Transformer";
+      20: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      21: import MessageTransformer from "src/modules/v1/chat-real-estate/app/Transformer";
+      22: import RealEstateAgentsCommentsPostgresqlRepository from "src/modules/v1/real-estate-agents-comments/repositories/RealEstateAgentsCommentsPostgresqlRepository";
+      24: import { CacheModule } from "@nestjs/cache-manager";
+      25: import * as redisStore from "cache-manager-redis-store";
+      26: import { RedisClientOptions } from "redis";
+      27: import RealEstateAdsPostgresqlRepository from "src/modules/v1/real-estate-ads/repositories/RealEstateAdsPostgresqlRepository";
+      28: import { UsersModule } from "src/modules/v1/users/admin/users.module";
+      29: import { UsersService } from "src/modules/v1/users/admin/users.service";
+      30: import UserPrismaRepository from "src/modules/v1/users/admin/repositories/UserPrismaRepository";
+      31: import { JwtModule, JwtService } from "@nestjs/jwt";
+      32: import { RealEstateAdsService } from "src/modules/v1/real-estate-ads/admin/real-estate-ads.service";
+      33: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      34: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      35: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      36: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      37: import { RealEstateAdsModuleApp } from "../../real-estate-ads/app/real-estate-ads.module";
+      38: import EventRoomsTransformer from "../../event-rooms/app/Transformer";
+      39: import { MessengerChannelsService } from "../../messenger_channels/app/messenger-channels.service";
+      40: import { MessengerChannelAppModule } from "../../messenger_channels/app/messenger-channel.module";
+      41: import UploadService from "src/modules/services/UploadService";
+      44: imports: [
+      49: CacheModule.registerAsync<RedisClientOptions>({
+      51: store: redisStore.redisStore as any,
+  !   52: host: process.env.REDIS_HOST,
+      53: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      56: password:
+      57: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      61: controllers: [ReportController],
+      66: ReportService,
+      67: ReportBugsTransformer,
+      69: ReportsTransformer,
+      95: exports: [ReportAdminModule, ReportService, ReportBugsTransformer],
+      97: export class ReportAdminModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\webinar\app\webinar.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { WebinarService } from "./webinar.service";
+       3: import { WebinarController } from "./webinar.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { NestjsFormDataModule } from "nestjs-form-data";
+       7: import { CacheModule } from "@nestjs/cache-manager";
+       8: import * as redisStore from "cache-manager-redis-store";
+       9: import { RedisClientOptions } from "redis";
+      12: imports: [
+      14: CacheModule.registerAsync<RedisClientOptions>({
+      16: store: redisStore.redisStore as any,
+  !   17: host: process.env.REDIS_HOST,
+      18: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      21: password:
+      22: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      28: exports: [WebinarModule, WebinarService],
+      30: export class WebinarModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v1\ws-server\ws-server.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { WsServerService } from "./ws-server.service";
+       3: import { WsServerGateway } from "./ws-server.gateway";
+       4: import { JwtModule, JwtService } from "@nestjs/jwt";
+       5: import { CacheModule } from "@nestjs/cache-manager";
+       6: import * as redisStore from "cache-manager-redis-store";
+       7: import { RedisClientOptions } from "redis";
+       8: import { PrismaService } from "../../../../prisma/prisma.service";
+       9: import { ClientService } from "src/modules/v1/client/app/client.service";
+      10: import ClientTransformer from "src/modules/v1/client/app/Transformer";
+      11: import MessageTransformer from "src/modules/v1/chat-real-estate/app/Transformer";
+      12: import MessengerAppTransformer from "src/modules/v1/messenger/app/Transformer";
+      13: import { MessengerChannelsService } from "src/modules/v1/messenger_channels/app/messenger-channels.service";
+      14: import UploadService from "src/modules/services/UploadService";
+      15: import MessengerChannelTransformer from "src/modules/v1/messenger_channels/app/Transformer";
+      16: import { MessengerGroupsService } from "src/modules/v1/messenger_groups/app/messenger-groups.service";
+      17: import MessengerGroupsTransformer from "src/modules/v1/messenger_groups/app/Transformer";
+      18: import { MessengerService } from "../messenger/app/messenger.service";
+      19: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      20: import { NotificationsService } from "../notifications/app/notifications.service";
+      21: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      22: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      23: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      24: import { JwtStrategy } from "../auth/strategies/jwt.staregry";
+      25: import { TokenService } from "../jwt-auth/services/TokenService";
+      26: import { MessengerSaveMessageAppModule } from "../messenger-save-message/app/save-message-app.module";
+      27: import { MessengerSaveMessageService } from "../messenger-save-message/app/save-message.service";
+      28: import { RealEstateAgentsAdvisorsService } from "../real-estate-agents-advisors/app/real-estate-agents-advisors.service";
+      29: import RealEstateAdvisorTransformer from "../real-estate-agents-advisors/app/Transformer";
+      30: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      31: import { MarketplaceChatAppModule } from "../marketplace-messenger/app/marketplace-messenger.module";
+      32: import { WebsocketFactoryClass } from "./factory/WsFactory";
+      33: import { MarketplaceMessengerService } from "../marketplace-messenger/app/marketplace-messenger.service";
+      34: import { MarketplaceMessengerFactory } from "../marketplace-messenger/app/factory/MarketplaceMessenger-factory";
+      37: imports: [
+      42: CacheModule.registerAsync<RedisClientOptions>({
+      44: store: redisStore.redisStore as any,
+  !   45: host: process.env.REDIS_HOST,
+      46: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      49: password:
+      50: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      83: exports: [WsServerGateway, WsServerService, WsServerModule],
+      85: export class WsServerModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\client\app\dto\create-client.dto.ts
+----------------------------------------------------------------------
+       1: import { IsMobilePhone, IsString } from "class-validator";
+       3: export class CreateClientDto {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\client\app\dto\save-gif-client.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { ApiProperty } from "@nestjs/swagger";
+       5: export class SaveGifClientDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\client\app\dto\update-client.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { IsNumberString, IsOptional, IsString } from "class-validator";
+       4: import { ApiProperty } from "@nestjs/swagger";
+       6: export class UpdateClientDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\client\app\dto\update-profile.dto.ts
+----------------------------------------------------------------------
+       1: import { PartialType } from "@nestjs/mapped-types";
+       2: import { CreateClientDto } from "./create-client.dto";
+       3: import { IsNumberString, IsOptional, IsString } from "class-validator";
+       4: import { ApiProperty } from "@nestjs/swagger";
+       6: export class UpdateClienProfiletDto extends PartialType(CreateClientDto) {
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\contacts\contacts.service.ts
+----------------------------------------------------------------------
+       1: import { Injectable } from "@nestjs/common";
+       2: import { CreateContactDto } from "./dto/CreateContactDto";
+       3: import { PrismaService } from "../../../../prisma/prisma.service";
+       4: import EventService from "src/modules/v2//webinar/provider/EventService";
+       5: import SmsService from "src/modules/services/notifications/sms/SmsService";
+       6: import { ClientService } from "src/modules/v2//client/app/client.service";
+       7: import IPagination from "src/commons/contracts/IPagination";
+       8: import IMetadata from "src/commons/contracts/IMetadata";
+       9: import ClientContactsTransformer from "./Transformer";
+      12: export class ContactsService {
+      25: async createNewContact(createClientContactDto: CreateContactDto) {
+      27: const contacts = createClientContactDto.contacts;
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\messenger\app\messenger-app.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { MessengerController } from "./messenger.controller";
+       3: import { PrismaService } from "../../../../../prisma/prisma.service";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { NestjsFormDataModule } from "nestjs-form-data";
+       6: import { ClientService } from "src/modules/v2//client/app/client.service";
+       7: import { ClientModule } from "src/modules/v2//client/app/client.module";
+       9: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      10: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      11: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      12: import MessageTransformer from "../../chat-real-estate/app/Transformer";
+      13: import MessengerAppTransformer from "../../messenger/app/Transformer";
+      14: import { MessengerChannelsService } from "../../messenger_channels/app/messenger-channels.service";
+      15: import { MessengerGroupsService } from "../../messenger_groups/app/messenger-groups.service";
+      16: import MessengerChannelTransformer from "../../messenger_channels/app/Transformer";
+      17: import MessengerGroupsTransformer from "../../messenger_groups/app/Transformer";
+      18: import UploadService from "src/modules/services/UploadService";
+      19: import { NotificationsService } from "../../notifications/app/notifications.service";
+      20: import { RealEstateAgentsService } from "../../real-estate-agents/app/real-estate-agents.service";
+      21: import RealEstateAgentsTransformer from "../../real-estate-agents/app/Transformer";
+      22: import RealEstateAgentsPostgresqlRepository from "../../real-estate-agents/repositories/RealEstateAgentsPostgresqlRepository";
+      23: import { ForceUpdateAdminModule } from "../../force-update/admin/force-update.module";
+      24: import { ForceUpdateService } from "../../force-update/admin/force-update.service";
+      25: import ForceUpdateTransformer from "../../force-update/admin/Transformer";
+      26: import RealEstateAdvisorTransformer from "../../real-estate-agents-advisors/app/Transformer";
+      27: import UserPrismaRepository from "../../users/admin/repositories/UserPrismaRepository";
+      28: import RealEstateAdminsTransformer from "../../real-estate-agents-admins/app/Transformer";
+      29: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      30: import { CacheModule } from "@nestjs/cache-manager";
+      31: import { RedisClientOptions } from "redis";
+      32: import * as redisStore from "cache-manager-redis-store";
+      33: import { MessengerSaveMessageAppModule } from "../../messenger-save-message/app/save-message-app.module";
+      34: import { MessengerSaveMessageService } from "../../messenger-save-message/app/save-message.service";
+      35: import { MessengerService } from "./messenger.service";
+      38: imports: [
+      42: CacheModule.registerAsync<RedisClientOptions>({
+      44: store: redisStore.redisStore as any,
+  !   45: host: process.env.REDIS_HOST,
+      46: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      49: password:
+      50: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      88: exports: [MessengerService, MessengerAppModule],
+      90: export class MessengerAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\real-estate-ads\app\real-estate-ads.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAdsServiceApp } from "./real-estate-ads-service-app.service";
+       3: import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { PrismaService } from "../../../../../prisma/prisma.service";
+       6: import RealEstateAdsPostgresqlRepository from "../repositories/RealEstateAdsPostgresqlRepository";
+       7: import { ClientModule } from "src/modules/v2/client/app/client.module";
+       8: import { ClientService } from "src/modules/v2/client/app/client.service";
+       9: import RealEstateAdsTransformer from "./Transformer";
+      10: import { NestjsFormDataModule } from "nestjs-form-data";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      16: import { RealEstateAdsService_robotScraper } from "../robotScraper/real-estate-ads.service";
+      17: import RealEstateAdsScraperTransformer from "../robotScraper/Transformer";
+      18: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      19: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      20: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      25: imports: [
+      26: CacheModule.registerAsync<RedisClientOptions>({
+      28: store: redisStore.redisStore as any,
+  !   29: host: process.env.REDIS_HOST,
+      30: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      33: password:
+      34: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      56: exports: [
+      61: CacheModule,
+      68: export class RealEstateAdsModuleApp {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\real-estate-ads\site\real-estate-ads.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAdsService } from "./real-estate-ads.service";
+       3: import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import { PrismaService } from "../../../../../prisma/prisma.service";
+       6: import RealEstateAdsPostgresqlRepository from "../repositories/RealEstateAdsPostgresqlRepository";
+       7: import { ClientModule } from "src/modules/v2/client/app/client.module";
+       8: import { ClientService } from "src/modules/v2/client/app/client.service";
+       9: import RealEstateAdsTransformer from "./Transformer";
+      10: import { NestjsFormDataModule } from "nestjs-form-data";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      20: imports: [
+      21: CacheModule.registerAsync<RedisClientOptions>({
+      23: store: redisStore.redisStore as any,
+  !   24: host: process.env.REDIS_HOST,
+      25: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      28: password:
+      29: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      46: export class RealEstateAdsModuleSite {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\real-estate-agents-admins\app\real-estate-agents-admins.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAgentsAdminsService } from "./real-estate-agents-admins.service";
+       3: import { RealEstateAgentsAdminsController } from "./real-estate-agents-admins.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { ClientService } from "src/modules/v2/client/app/client.service";
+       6: import { ClientModule } from "src/modules/v2/client/app/client.module";
+       7: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       8: import { NestjsFormDataModule } from "nestjs-form-data";
+       9: import ClientTransformer from "src/modules/v2/client/app/Transformer";
+      10: import RealEstateAdminsTransformer from "./Transformer";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      15: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      16: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      19: imports: [
+      20: CacheModule.registerAsync<RedisClientOptions>({
+      22: store: redisStore.redisStore as any,
+  !   23: host: process.env.REDIS_HOST,
+      24: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      27: password:
+      28: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      46: export class RealEstateAgentsAdminsAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\real-estate-agents-advisors\app\real-estate-agents-advisors.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RealEstateAgentsAdvisorsService } from "./real-estate-agents-advisors.service";
+       3: import { RealEstateAgentsAdvisorsController } from "./real-estate-agents-advisors.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { ClientService } from "src/modules/v2/client/app/client.service";
+       6: import { ClientModule } from "src/modules/v2/client/app/client.module";
+       7: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       8: import { NestjsFormDataModule } from "nestjs-form-data";
+       9: import ClientTransformer from "src/modules/v2/client/app/Transformer";
+      10: import RealEstateAdvisorTransformer from "./Transformer";
+      11: import { CacheModule } from "@nestjs/cache-manager";
+      12: import * as redisStore from "cache-manager-redis-store";
+      13: import { RedisClientOptions } from "redis";
+      14: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      15: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      16: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      19: imports: [
+      20: CacheModule.registerAsync<RedisClientOptions>({
+      22: store: redisStore.redisStore as any,
+  !   23: host: process.env.REDIS_HOST,
+      24: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      27: password:
+      28: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      45: exports: [
+      52: export class RealEstateAgentsAdvisorsAppModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\redis\redis.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { RedisModule as NestRedisModule } from "@nestjs-modules/ioredis";
+       3: import { RedisService } from "./redis.service";
+       6: imports: [
+       7: NestRedisModule.forRoot({
+  !    9: host: process.env.REDIS_HOST,
+      10: port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      11: password: process.env.REDIS_PASSWORD || undefined,
+      12: ...(process.env.REDIS_TLS === "true" && {
+      13: tls: {
+      26: exports: [RedisService],
+      28: export class RedisModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\reports\admin\report.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { ReportController } from "./report.controller";
+       3: import { PrismaService } from "../../../../../prisma/prisma.service";
+       4: import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
+       5: import ReportBugsTransformer from "./Transformer";
+       6: import { ReportService } from "./report.service";
+       7: import ReportsTransformer from "./Transformer";
+       8: import { ClientService } from "src/modules/v2/client/admin/client.service";
+       9: import { ClientModule } from "src/modules/v2/client/admin/client.module";
+      10: import { WebinarService } from "src/modules/v2/webinar/app/webinar.service";
+      11: import { EventRoomsService } from "src/modules/v2/event-rooms/app/event-rooms.service";
+      12: import { eventGroupsService } from "src/modules/v2/events/group/app/event-groups.service";
+      14: import { RealEstateAgentsService } from "src/modules/v2/real-estate-agents/admin/real-estate-agents.service";
+      15: import { RealEstateAgentsAdvisorsService } from "src/modules/v2/real-estate-agents-advisors/admin/real-estate-agents-advisors.service";
+      16: import { ChannelRealEstateService } from "src/modules/v2/channel-real-estate/app/channel-real-estate.service";
+      17: import { ChatRealEstateService } from "src/modules/v2/chat-real-estate/app/chat-real-estate.service";
+      18: import RealEstateAgentsPostgresqlRepository from "src/modules/v2/real-estate-agents/repositories/RealEstateAgentsPostgresqlRepository";
+      19: import RealEstateAdvisorTransformer from "src/modules/v2/real-estate-agents-advisors/admin/Transformer";
+      20: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      21: import MessageTransformer from "src/modules/v2/chat-real-estate/app/Transformer";
+      22: import RealEstateAgentsCommentsPostgresqlRepository from "src/modules/v2/real-estate-agents-comments/repositories/RealEstateAgentsCommentsPostgresqlRepository";
+      24: import { CacheModule } from "@nestjs/cache-manager";
+      25: import * as redisStore from "cache-manager-redis-store";
+      26: import { RedisClientOptions } from "redis";
+      27: import RealEstateAdsPostgresqlRepository from "src/modules/v2/real-estate-ads/repositories/RealEstateAdsPostgresqlRepository";
+      28: import { UsersModule } from "src/modules/v2/users/admin/users.module";
+      29: import { UsersService } from "src/modules/v2/users/admin/users.service";
+      30: import UserPrismaRepository from "src/modules/v2/users/admin/repositories/UserPrismaRepository";
+      31: import { JwtModule, JwtService } from "@nestjs/jwt";
+      32: import { RealEstateAdsService } from "src/modules/v2/real-estate-ads/admin/real-estate-ads.service";
+      33: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      34: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      35: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      36: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      37: import { RealEstateAdsModuleApp } from "../../real-estate-ads/app/real-estate-ads.module";
+      38: import EventRoomsTransformer from "../../event-rooms/app/Transformer";
+      39: import { MessengerChannelsService } from "../../messenger_channels/app/messenger-channels.service";
+      40: import { MessengerChannelAppModule } from "../../messenger_channels/app/messenger-channel.module";
+      41: import UploadService from "src/modules/services/UploadService";
+      44: imports: [
+      49: CacheModule.registerAsync<RedisClientOptions>({
+      51: store: redisStore.redisStore as any,
+  !   52: host: process.env.REDIS_HOST,
+      53: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      56: password:
+      57: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      61: controllers: [ReportController],
+      66: ReportService,
+      67: ReportBugsTransformer,
+      69: ReportsTransformer,
+      95: exports: [ReportAdminModule, ReportService, ReportBugsTransformer],
+      97: export class ReportAdminModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\webinar\app\webinar.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { WebinarService } from "./webinar.service";
+       3: import { WebinarController } from "./webinar.controller";
+       4: import { PrismaService } from "../../../../../prisma/prisma.service";
+       5: import { NestjsFormDataModule } from "nestjs-form-data";
+       7: import { CacheModule } from "@nestjs/cache-manager";
+       8: import * as redisStore from "cache-manager-redis-store";
+       9: import { RedisClientOptions } from "redis";
+      12: imports: [
+      14: CacheModule.registerAsync<RedisClientOptions>({
+      16: store: redisStore.redisStore as any,
+  !   17: host: process.env.REDIS_HOST,
+      18: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      21: password:
+      22: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      28: exports: [WebinarModule, WebinarService],
+      30: export class WebinarModule {}
+
+FILE: C:\Users\mohammad\Documents\Projects\mr-building\Mr.b-Backend-Code-base-develop\Mr.b-Backend-Code-base-develop\src\modules\v2\ws-server\ws-server.module.ts
+----------------------------------------------------------------------
+       1: import { Module } from "@nestjs/common";
+       2: import { WsServerService } from "./ws-server.service";
+       3: import { WsServerGateway } from "./ws-server.gateway";
+       4: import { JwtModule, JwtService } from "@nestjs/jwt";
+       5: import { CacheModule } from "@nestjs/cache-manager";
+       6: import * as redisStore from "cache-manager-redis-store";
+       7: import { RedisClientOptions } from "redis";
+       8: import { PrismaService } from "../../../../prisma/prisma.service";
+       9: import { ClientService } from "src/modules/v2/client/app/client.service";
+      10: import ClientTransformer from "src/modules/v2/client/app/Transformer";
+      11: import MessageTransformer from "src/modules/v2/chat-real-estate/app/Transformer";
+      12: import MessengerAppTransformer from "src/modules/v2/messenger/app/Transformer";
+      13: import { MessengerChannelsService } from "src/modules/v2/messenger_channels/app/messenger-channels.service";
+      14: import UploadService from "src/modules/services/UploadService";
+      15: import MessengerChannelTransformer from "src/modules/v2/messenger_channels/app/Transformer";
+      16: import { MessengerGroupsService } from "src/modules/v2/messenger_groups/app/messenger-groups.service";
+      17: import MessengerGroupsTransformer from "src/modules/v2/messenger_groups/app/Transformer";
+      18: import { MessengerService } from "../messenger/app/messenger.service";
+      19: import GoogleFCM from "src/modules/services/notifications/fcm/providers/GoogleFCM";
+      20: import { NotificationsService } from "../notifications/app/notifications.service";
+      21: import FcmNotificationService from "src/modules/services/notifications/fcm/FcmNotificationService";
+      22: import MailerService from "src/modules/services/notifications/mailer/mailerService";
+      23: import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+      24: import { JwtStrategy } from "../auth/strategies/jwt.staregry";
+      25: import { TokenService } from "../jwt-auth/services/TokenService";
+      26: import { MessengerSaveMessageAppModule } from "../messenger-save-message/app/save-message-app.module";
+      27: import { MessengerSaveMessageService } from "../messenger-save-message/app/save-message.service";
+      28: import { RealEstateAgentsAdvisorsService } from "../real-estate-agents-advisors/app/real-estate-agents-advisors.service";
+      29: import RealEstateAdvisorTransformer from "../real-estate-agents-advisors/app/Transformer";
+      30: import SmsService from "src/modules/services/notifications/sms/SmsService";
+      31: import { MarketplaceChatAppModule } from "../marketplace-messenger/app/marketplace-messenger.module";
+      32: import { WebsocketFactoryClass } from "./factory/WsFactory";
+      33: import { MarketplaceMessengerService } from "../marketplace-messenger/app/marketplace-messenger.service";
+      34: import { MarketplaceMessengerFactory } from "../marketplace-messenger/app/factory/MarketplaceMessenger-factory";
+      37: imports: [
+      42: CacheModule.registerAsync<RedisClientOptions>({
+      44: store: redisStore.redisStore as any,
+  !   45: host: process.env.REDIS_HOST,
+      46: port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      49: password:
+      50: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+      83: exports: [WsServerGateway, WsServerService, WsServerModule],
+      85: export class WsServerModule {}

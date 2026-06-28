@@ -1,4 +1,4 @@
-﻿import { Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { RealEstateAdsServiceApp } from "./real-estate-ads-service-app.service";
 import { RealEstateAdsSettingsController } from "./real-estate-ads.controller";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
@@ -26,12 +26,17 @@ import SmsService from "src/modules/services/notifications/sms/SmsService";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        socket: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
+        },
         database: 10,
         ttl: 60,
         password:
-          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+          process.env.APP_MODE !== 'development'
+            ? process.env.REDIS_PASSWORD
+            : undefined,
       }),
     }),
     ClientModule,

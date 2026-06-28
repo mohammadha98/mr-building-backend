@@ -1,51 +1,52 @@
-import { Module } from "@nestjs/common";
-import { RealEstateAgentsAdminsService } from "./real-estate-agents-admins.service";
-import { RealEstateAgentsAdminsController } from "./real-estate-agents-admins.controller";
+﻿import { Module } from "@nestjs/common";
+import { RealEstateAgentsAdvisorsService } from "./real-estate-agents-advisors.service";
+import { RealEstateAgentsAdvisorsController } from "./real-estate-agents-advisors.controller";
 import { PrismaService } from "../../../../../prisma/prisma.service";
 import { ClientService } from "src/modules/v1/client/app/client.service";
 import { ClientModule } from "src/modules/v1/client/app/client.module";
 import { HttpResponsehandler } from "src/modules/services/httpResponseHandler/httpResponsehandler";
 import { NestjsFormDataModule } from "nestjs-form-data";
 import ClientTransformer from "src/modules/v1/client/app/Transformer";
-import RealEstateAdminsTransformer from "./Transformer";
+import RealEstateAdvisorTransformer from "./Transformer";
 import { CacheModule } from "@nestjs/cache-manager";
 import * as redisStore from "cache-manager-redis-store";
 import { RedisClientOptions } from "redis";
 import SmsService from "src/modules/services/notifications/sms/SmsService";
-import MailerService from "src/modules/services/notifications/mailer/mailerService";
 import MrBuildingMailerService from "src/modules/services/notifications/mailer/providers/MrBuildingMailerService";
+import MailerService from "src/modules/services/notifications/mailer/mailerService";
 
 @Module({
   imports: [
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
-        },
-        database: 13,
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        database: 14,
         ttl: 60,
         password:
-          process.env.APP_MODE !== 'development'
-            ? process.env.REDIS_PASSWORD
-            : undefined,
+          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
     ClientModule,
     NestjsFormDataModule,
   ],
-  controllers: [RealEstateAgentsAdminsController],
+  controllers: [RealEstateAgentsAdvisorsController],
   providers: [
-    RealEstateAgentsAdminsService,
-    RealEstateAdminsTransformer,
+    RealEstateAgentsAdvisorsService,
+    RealEstateAdvisorTransformer,
     ClientService,
     HttpResponsehandler,
     ClientTransformer,
     SmsService,
-    MailerService,
     MrBuildingMailerService,
+    MailerService,
+  ],
+  exports: [
+    RealEstateAgentsAdvisorsAppModule,
+    RealEstateAgentsAdvisorsService,
+    RealEstateAdvisorTransformer,
+    SmsService,
   ],
 })
-export class RealEstateAgentsAdminsAppModule {}
+export class RealEstateAgentsAdvisorsAppModule {}

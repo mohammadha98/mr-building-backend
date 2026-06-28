@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+﻿import { Module } from "@nestjs/common";
 import { RealEstateAgentsAdminsService } from "./real-estate-agents-admins.service";
 import { RealEstateAgentsAdminsController } from "./real-estate-agents-admins.controller";
 import { PrismaService } from "../../../../../prisma/prisma.service";
@@ -20,17 +20,12 @@ import MrBuildingMailerService from "src/modules/services/notifications/mailer/p
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
-        },
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         database: 13,
         ttl: 60,
         password:
-          process.env.APP_MODE !== 'development'
-            ? process.env.REDIS_PASSWORD
-            : undefined,
+          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
     ClientModule,

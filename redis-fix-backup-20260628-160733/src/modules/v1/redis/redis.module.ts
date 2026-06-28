@@ -1,4 +1,4 @@
-import { Module, Inject, OnModuleInit, Logger } from "@nestjs/common";
+﻿import { Module, Inject, OnModuleInit, Logger } from "@nestjs/common";
 import { RedisService } from "./redis.service";
 import { RedisController } from "./redis.controller";
 import { Cache } from "cache-manager";
@@ -11,15 +11,10 @@ import type { RedisClientOptions } from "redis";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
-        },
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
         password:
-          process.env.APP_MODE !== 'development'
-            ? process.env.REDIS_PASSWORD
-            : undefined,
+          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
   ],

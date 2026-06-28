@@ -1,4 +1,4 @@
-﻿import { Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { WsServerService } from "./ws-server.service";
 import { WsServerGateway } from "./ws-server.gateway";
 import { JwtModule, JwtService } from "@nestjs/jwt";
@@ -42,12 +42,17 @@ import { MarketplaceMessengerFactory } from "../marketplace-messenger/app/factor
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        socket: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          ...(process.env.REDIS_TLS === 'true' && { tls: true }),
+        },
         database: 0,
         ttl: null,
         password:
-          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+          process.env.APP_MODE !== 'development'
+            ? process.env.REDIS_PASSWORD
+            : undefined,
       }),
     }),
     MarketplaceChatAppModule,
