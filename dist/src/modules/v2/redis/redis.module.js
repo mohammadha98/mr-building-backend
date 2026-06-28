@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var RedisModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RedisModule = void 0;
 const common_1 = require("@nestjs/common");
@@ -19,28 +18,30 @@ const redis_service_1 = require("./redis.service");
 const redis_controller_1 = require("./redis.controller");
 const redisStore = require("cache-manager-redis-store");
 const cache_manager_1 = require("@nestjs/cache-manager");
-let RedisModule = RedisModule_1 = class RedisModule {
+let RedisModule = class RedisModule {
     constructor(cache) {
         this.cache = cache;
     }
     onModuleInit() {
-        const logger = new common_1.Logger("cache logger");
-        console.log(logger);
+        const logger = new common_1.Logger("RedisModule");
+        logger.log("Redis cache initialized");
     }
 };
-RedisModule = RedisModule_1 = __decorate([
+RedisModule = __decorate([
     (0, common_1.Module)({
         imports: [
             cache_manager_1.CacheModule.registerAsync({
                 useFactory: () => ({
-                    store: redisStore.redisStore,
-                    host: "https://suitable-stallion-154730.upstash.io",
-                    token: 'gQAAAAAAAlxqAAIgcDFlNzI2YzFkNWRkOWI0NmQyOTgzNWVjNDhmYTQwYzgwNw',
-                    port: 6379,
+                    store: redisStore,
+                    host: process.env.REDIS_HOST || "suitable-stallion-154730.upstash.io",
+                    port: parseInt(process.env.REDIS_PORT || "6379"),
+                    password: process.env.REDIS_PASSWORD,
+                    username: 'mohammad',
+                    tls: process.env.REDIS_TLS === "true" ? {} : undefined,
                 }),
             }),
         ],
-        exports: [RedisModule_1, redis_service_1.RedisService],
+        exports: [redis_service_1.RedisService],
         controllers: [redis_controller_1.RedisController],
         providers: [redis_service_1.RedisService],
     }),

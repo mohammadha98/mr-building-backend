@@ -10,21 +10,23 @@ import type { RedisClientOptions } from "redis";
   imports: [
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
-        store: redisStore.redisStore as any,
-        host: "https://suitable-stallion-154730.upstash.io",
-        token:'gQAAAAAAAlxqAAIgcDFlNzI2YzFkNWRkOWI0NmQyOTgzNWVjNDhmYTQwYzgwNw',
-        port: 6379,
+        store: redisStore as any,
+        host: process.env.REDIS_HOST || "suitable-stallion-154730.upstash.io",
+        port: parseInt(process.env.REDIS_PORT || "6379"),
+        password: process.env.REDIS_PASSWORD,
+        username:'mohammad',
+        tls: process.env.REDIS_TLS === "true" ? {} : undefined,
       }),
     }),
   ],
-  exports: [RedisModule, RedisService],
+  exports: [RedisService],
   controllers: [RedisController],
   providers: [RedisService],
 })
 export class RedisModule implements OnModuleInit {
   constructor(@Inject(CACHE_MANAGER) private cache: Cache) {}
   onModuleInit() {
-    const logger = new Logger("cache logger");
-    console.log(logger);
+    const logger = new Logger("RedisModule");
+    logger.log("Redis cache initialized");
   }
 }
