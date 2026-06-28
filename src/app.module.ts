@@ -32,7 +32,6 @@ import { AppV2Module } from "./modules/v2/app/app.module";
       },
     }),
     AppV2Module,
-    AppV1Module,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "/public/"),
       serveStaticOptions: { index: false },

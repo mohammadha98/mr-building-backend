@@ -14,8 +14,7 @@ const path_1 = require("path");
 const moment_1 = require("moment");
 const jwt_1 = require("@nestjs/jwt");
 const mailer_1 = require("@nestjs-modules/mailer");
-const app_module_1 = require("./modules/v1/app/app.module");
-const app_module_2 = require("./modules/v2/app/app.module");
+const app_module_1 = require("./modules/v2/app/app.module");
 let MainAppModule = class MainAppModule {
     configure(consumer) {
         consumer.apply(logger_middleware_1.LoggerMiddleware).forRoutes("*");
@@ -42,8 +41,7 @@ MainAppModule = __decorate([
                     },
                 },
             }),
-            app_module_2.AppV2Module,
-            app_module_1.AppV1Module,
+            app_module_1.AppV2Module,
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: (0, path_1.join)(process.cwd(), "/public/"),
                 serveStaticOptions: { index: false },
