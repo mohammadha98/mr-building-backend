@@ -9,7 +9,7 @@ $files = Get-ChildItem -Path . -Recurse -File | Where-Object {
 }
 
 # جستجوی کلمه localhost داخل فایل‌ها
-$results = $files | Select-String -SimpleMatch "localhost"
+$results = $files | Select-String -SimpleMatch "6379"
 
 $count = 0
 foreach ($match in $results) {
@@ -27,4 +27,4 @@ foreach ($match in $results) {
     $count++
 }
 
-Write-Host "Total 'localhost' occurrences found: $count" -ForegroundColor Green
+Write-Host "Total '127.0.0.1' occurrences found: $count" -ForegroundColor Green

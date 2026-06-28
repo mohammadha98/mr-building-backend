@@ -7,6 +7,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import helmet from "helmet";
 import { SwaggerConfigInit } from "./configs/swagger.config";
+import { ConfigModule } from "@nestjs/config"; 
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ process.on('uncaughtException', (error) => {
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  
+
   try {
     logger.log('🟢 Step 1: Loading environment variables...');
     logger.log(`REDIS_HOST: ${process.env.REDIS_HOST || 'NOT SET'}`);
@@ -33,7 +34,16 @@ async function bootstrap() {
     logger.log(`REDIS_TLS: ${process.env.REDIS_TLS || 'NOT SET'}`);
     logger.log(`APP_PORT: ${process.env.APP_PORT || 'NOT SET'}`);
 
+    logger.log('🟢 Step 1.5: Initializing ConfigModule...');
+    ConfigModule.forRoot({
+      isGlobal: true, // Make ConfigModule available globally
+    });
+
+
     logger.log('🟢 Step 2: Creating NestJS application...');
+    console.log('--- DEBUG REDIS HOST ---');
+    console.log('REDIS_HOST IS:', process.env.REDIS_HOST);
+    console.log('------------------------');
     const app = await NestFactory.create<NestExpressApplication>(MainAppModule, {
       cors: true,
       bodyParser: true,
@@ -42,16 +52,16 @@ async function bootstrap() {
 
     logger.log('🟢 Step 3: Configuring static assets...');
     app.useStaticAssets("public");
-    
+
     logger.log('🟢 Step 4: Setting timezone...');
     process.env.TZ = "Asia/Tehran";
-    
+
     logger.log('🟢 Step 5: Setting global prefix...');
     app.setGlobalPrefix("api");
-    
+
     logger.log('🟢 Step 6: Enabling versioning...');
     app.enableVersioning({ type: VersioningType.URI });
-    
+
     logger.log('🟢 Step 7: Configuring body parser...');
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
@@ -89,13 +99,13 @@ async function bootstrap() {
     await app.listen(process.env.APP_PORT, () => {
       logger.log(`✅ Application Running on port: ${process.env.APP_PORT}`);
     });
-    
-  } catch (error:any) {
+
+  } catch (error: any) {
     logger.error(`❌ Error in Bootstrap Process`);
     logger.error(`Error name: ${error.name}`);
     logger.error(`Error message: ${error.message}`);
     logger.error(`Error stack: ${error.stack}`);
-    
+
     // اگه aggregate error هست، همه رو نشون بده
     if (error.errors) {
       logger.error(`🔴 Aggregate errors count: ${error.errors.length}`);
@@ -104,7 +114,7 @@ async function bootstrap() {
         logger.error(`🔴 Stack ${index + 1}:`, err.stack);
       });
     }
-    
+
     process.exit(1);
   }
 }
