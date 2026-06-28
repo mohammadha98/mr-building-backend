@@ -34,9 +34,9 @@ RedisModule = RedisModule_1 = __decorate([
             cache_manager_1.CacheModule.registerAsync({
                 useFactory: () => ({
                     store: redisStore.redisStore,
-                    host: "localhost",
+                    host: "https://suitable-stallion-154730.upstash.io",
+                    token: 'gQAAAAAAAlxqAAIgcDFlNzI2YzFkNWRkOWI0NmQyOTgzNWVjNDhmYTQwYzgwNw',
                     port: 6379,
-                    password: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
                 }),
             }),
         ],

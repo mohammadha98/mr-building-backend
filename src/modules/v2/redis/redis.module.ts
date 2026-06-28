@@ -11,10 +11,9 @@ import type { RedisClientOptions } from "redis";
     CacheModule.registerAsync<RedisClientOptions>({
       useFactory: () => ({
         store: redisStore.redisStore as any,
-        host: "localhost",
+        host: "https://suitable-stallion-154730.upstash.io",
+        token:'gQAAAAAAAlxqAAIgcDFlNzI2YzFkNWRkOWI0NmQyOTgzNWVjNDhmYTQwYzgwNw',
         port: 6379,
-        password:
-          process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
       }),
     }),
   ],
