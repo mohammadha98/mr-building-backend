@@ -8,7 +8,7 @@ export function SwaggerConfigInit(app: INestApplication): void {
     .setTitle("NestJS Backend Api")
     .setDescription("")
     .setVersion("v1.0.0")
-    .addServer(`http://localhost:${process.env.APP_PORT}`)
+    .addServer(`http://localhost:${process.env.PORT}`)
     .addServer(`https://dev.psgapplication.ir`)
     .addServer(`https://dev2.psgapplication.ir`)
     .addServer(`https://api.psgapplication.ir`)

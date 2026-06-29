@@ -96,8 +96,8 @@ async function bootstrap() {
     app.enableShutdownHooks();
 
     logger.log('🟢 Step 13: Starting server...');
-    await app.listen(process.env.APP_PORT, () => {
-      logger.log(`✅ Application Running on port: ${process.env.APP_PORT}`);
+    await app.listen(process.env.PORT, () => {
+      logger.log(`✅ Application Running on port: ${process.env.PORT}`);
     });
 
   } catch (error: any) {
