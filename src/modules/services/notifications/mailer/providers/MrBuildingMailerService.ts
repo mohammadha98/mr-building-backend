@@ -18,7 +18,10 @@ export default class MrBuildingMailerService implements IMailerService {
           subject: body.subject,
           html: body.body,
           attachments,
-          from: process.env.MAIL_USER,
+          from:
+            process.env.MAIL_FROM ||
+            process.env.MAIL_USER ||
+            process.env.MAIL_USERNAME,
         })
         .then((response) => {
           console.log("Email sent");

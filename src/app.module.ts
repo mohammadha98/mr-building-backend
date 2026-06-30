@@ -17,18 +17,30 @@ import { AppV2Module } from "./modules/v2/app/app.module";
     MailerModule.forRoot({
       transport: {
         host: String(process.env.MAIL_HOST),
-        port: Number(process.env.MAIL_PORT),
-        secure: false,
-        ignoreTLS: true,  
+        port: Number(process.env.MAIL_PORT || 587),
+        secure:
+          String(process.env.MAIL_SECURE || "false").toLowerCase() === "true" ||
+          Number(process.env.MAIL_PORT || 587) === 465,
+        ignoreTLS:
+          String(process.env.MAIL_IGNORE_TLS || "false").toLowerCase() ===
+          "true",
+        requireTLS:
+          String(process.env.MAIL_REQUIRE_TLS || "false").toLowerCase() ===
+          "true",
         tls: {
-          rejectUnauthorized: false  
+          rejectUnauthorized:
+            String(
+              process.env.MAIL_TLS_REJECT_UNAUTHORIZED || "false"
+            ).toLowerCase() === "true",
         },
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
-        },
-        // logger: true,
-        // debug: true
+        ...(process.env.MAIL_USER || process.env.MAIL_USERNAME
+          ? {
+              auth: {
+                user: process.env.MAIL_USER || process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASS || process.env.MAIL_PASSWORD,
+              },
+            }
+          : {}),
       },
     }),
     AppV2Module,
