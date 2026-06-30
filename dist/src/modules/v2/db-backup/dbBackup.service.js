@@ -36,7 +36,7 @@ let DbBackupService = class DbBackupService {
         const dbUser = process.env.APP_MODE === "develop" ? "root" : "p3rshainglf";
         const filename = `${Date.now()}_backup.dump`;
         const backupAddr = process.cwd() + `/public/contents/backups/${filename}`;
-        const command = `pg_dump -h localhost -U ${dbUser} -d ${dbName} -F c -f  "${backupAddr}"`;
+        const command = `pg_dump -h ${process.env.DATABASE_HOST || 'localhost'} -U ${dbUser} -d ${dbName} -F c -f  "${backupAddr}"`;
         console.log("createBackup");
         console.log(command);
         let status = await this.executeCommand(command);

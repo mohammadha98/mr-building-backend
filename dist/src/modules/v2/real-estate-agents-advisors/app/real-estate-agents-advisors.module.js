@@ -30,11 +30,12 @@ RealEstateAgentsAdvisorsAppModule = RealEstateAgentsAdvisorsAppModule_1 = __deco
             cache_manager_1.CacheModule.registerAsync({
                 useFactory: () => ({
                     store: redisStore.redisStore,
-                    host: "localhost",
-                    port: 6379,
+                    socket: Object.assign({ host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT || '6379', 10) }, (process.env.REDIS_TLS === 'true' && { tls: true })),
                     database: 14,
                     ttl: 60,
-                    password: process.env.APP_MODE !== "development" && process.env.REDIS_PASSWORD,
+                    password: process.env.APP_MODE !== 'development'
+                        ? process.env.REDIS_PASSWORD
+                        : undefined,
                 }),
             }),
             client_module_1.ClientModule,

@@ -16,7 +16,7 @@ RedisModule = __decorate([
     (0, common_1.Module)({
         imports: [
             ioredis_1.RedisModule.forRoot({
-                config: Object.assign(Object.assign({ host: process.env.REDIS_HOST || "redis", port: parseInt(process.env.REDIS_PORT, 10) || 6379, password: process.env.REDIS_PASSWORD || undefined }, (process.env.REDIS_TLS === "true" && {
+                config: Object.assign(Object.assign({ host: process.env.REDIS_HOST, port: parseInt(process.env.REDIS_PORT, 10) || 6379, password: process.env.REDIS_PASSWORD || undefined }, (process.env.REDIS_TLS === "true" && {
                     tls: {},
                 })), { lazyConnect: false, retryStrategy(times) {
                         const delay = Math.min(times * 50, 2000);
