@@ -28,6 +28,8 @@ let ClientService = class ClientService {
                     phone: verifyAuthDto.phone,
                     key: verifyAuthDto.key,
                     password: null,
+                    provincesId: null,
+                    citiesId: null,
                 },
                 select: {
                     id: true,

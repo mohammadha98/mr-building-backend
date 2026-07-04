@@ -35,6 +35,11 @@ export declare class AuthService {
         client?: undefined;
         next_step?: undefined;
     } | {
+        status: HttpStatus;
+        message: string;
+        client?: undefined;
+        next_step?: undefined;
+    } | {
         status: HttpStatus.OK | HttpStatus.CREATED;
         message: any;
         client: any;

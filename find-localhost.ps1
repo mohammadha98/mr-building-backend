@@ -9,13 +9,13 @@ $files = Get-ChildItem -Path . -Recurse -File | Where-Object {
 }
 
 # جستجوی کلمه localhost داخل فایل‌ها
-$results = $files | Select-String -SimpleMatch "env.APP_PORT"
+$results = $files | Select-String -SimpleMatch "token"
 
 $count = 0
 foreach ($match in $results) {
     # ساختاربندی مسیر برای اینکه در VS Code قابل کلیک باشد (Path:LineNumber)
     $clickablePath = "$($match.Path):$($match.LineNumber)"
-    
+
     # گرفتن کدی که کلمه localhost در آن پیدا شده
     $codeSnippet = $match.Line.Trim()
 
@@ -23,7 +23,7 @@ foreach ($match in $results) {
     Write-Host $clickablePath -ForegroundColor Cyan
     Write-Host "   > $codeSnippet" -ForegroundColor Gray
     Write-Host "---------------------------------------------------" -ForegroundColor DarkGray
-    
+
     $count++
 }
 

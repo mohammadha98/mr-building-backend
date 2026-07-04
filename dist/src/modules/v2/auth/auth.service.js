@@ -113,6 +113,12 @@ let AuthService = class AuthService {
                 next_step = AppSteps_1.default.complete_registration;
                 VerifyAuthDto.key = await this.generateKey();
                 client = await this.clientService.create(VerifyAuthDto);
+                if (!client || typeof client !== "object") {
+                    return {
+                        status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                        message: "ثبت نام با خطا مواجه شد. لطفا دوباره تلاش کنید.",
+                    };
+                }
                 client.token = this.jwtService.sign({ sub: client.id });
                 await this.clientService.updateToken(Number(client.id), client.token);
                 await this.saveMissionForNewClient(client);
@@ -120,15 +126,23 @@ let AuthService = class AuthService {
                     await this.referralCodeService.saveReferralCodeForCLient(client.id);
                 status = common_1.HttpStatus.CREATED;
                 message = "ثبت نام با موفقیت انجام شد.";
-                const channelInfo = await this.messengerChannelsService.channelInfo({
-                    username: "mrbuilding",
-                    client_id: client.id,
-                });
-                if (channelInfo.channels.length) {
-                    await this.messengerChannelsService.joinChannel({
-                        channel_id: channelInfo.channels[0].id,
+                try {
+                    const channelInfo = await this.messengerChannelsService.channelInfo({
+                        username: "mrbuilding",
                         client_id: client.id,
                     });
+                    const channels = Array.isArray(channelInfo === null || channelInfo === void 0 ? void 0 : channelInfo.channels)
+                        ? channelInfo.channels
+                        : [];
+                    if (channels.length) {
+                        await this.messengerChannelsService.joinChannel({
+                            channel_id: channels[0].id,
+                            client_id: client.id,
+                        });
+                    }
+                }
+                catch (channelError) {
+                    console.log("Messenger channel join skipped", channelError);
                 }
             }
             else {
