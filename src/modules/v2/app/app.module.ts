@@ -49,6 +49,7 @@ import { MyCityBookmarksModule } from "../my-city-bookmarks/my-city-bookmarks.mo
 import { MarketplaceMessengerModule } from "../marketplace-messenger/marketplace-messenger.module";
 // @ts-ignore
 import { PrismaModule } from "../../../../prisma/prisma.module";
+import { DatabaseSeederModule } from "../admin-users-roles/seeds/database-seeder.module";
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import { PrismaModule } from "../../../../prisma/prisma.module";
     MessengerModule,
     MessengerChannelsModule,
     MessengerGroupsModule,
+    DatabaseSeederModule
   ],
 })
 export class AppV2Module {}

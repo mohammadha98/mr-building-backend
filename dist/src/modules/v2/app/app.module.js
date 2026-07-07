@@ -57,6 +57,7 @@ const my_city_module_1 = require("../my-city/my-city.module");
 const my_city_bookmarks_module_1 = require("../my-city-bookmarks/my-city-bookmarks.module");
 const marketplace_messenger_module_1 = require("../marketplace-messenger/marketplace-messenger.module");
 const prisma_module_1 = require("../../../../prisma/prisma.module");
+const database_seeder_module_1 = require("../admin-users-roles/seeds/database-seeder.module");
 let AppV2Module = class AppV2Module {
 };
 AppV2Module = __decorate([
@@ -111,6 +112,7 @@ AppV2Module = __decorate([
             messenger_module_1.MessengerModule,
             messenger_channels_module_1.MessengerChannelsModule,
             messenger_groups_module_1.MessengerGroupsModule,
+            database_seeder_module_1.DatabaseSeederModule
         ],
     })
 ], AppV2Module);
