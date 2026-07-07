@@ -2,9 +2,9 @@ import { HttpStatus } from "@nestjs/common";
 import { VerifyAuthDto } from "./dto/verify-auth.dto";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
-import { ClientService } from "src/modules/v1//client/app/client.service";
+import { ClientService } from "src/modules/v2//client/app/client.service";
 import AppSteps from "src/commons/contracts/AppSteps";
-import { ReferralCodeService } from "src/modules/v1/referral-code/app/referral-code.service";
+import { ReferralCodeService } from "src/modules/v2/referral-code/app/referral-code.service";
 import { MessengerChannelsService } from "../messenger_channels/app/messenger-channels.service";
 import SmsService from "src/modules/services/notifications/sms/SmsService";
 export declare class AuthService {

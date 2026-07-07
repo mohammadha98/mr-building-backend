@@ -117,6 +117,13 @@ export class AuthService {
 
         client = await this.clientService.create(VerifyAuthDto);
 
+        if (!client || typeof client !== "object") {
+          return {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: "ثبت نام با خطا مواجه شد. لطفا دوباره تلاش کنید.",
+          };
+        }
+
         // generate jwt token
         client.token = this.jwtService.sign({ sub: client.id });
 
@@ -133,15 +140,23 @@ export class AuthService {
         message = "ثبت نام با موفقیت انجام شد.";
 
         // عضویت در کانال رسمی آقای ساختماندر مسنجر
-        const channelInfo = await this.messengerChannelsService.channelInfo({
-          username: "mrbuilding",
-          client_id: client.id,
-        });
-        if (channelInfo.channels.length) {
-          await this.messengerChannelsService.joinChannel({
-            channel_id: channelInfo.channels[0].id,
+        try {
+          const channelInfo = await this.messengerChannelsService.channelInfo({
+            username: "mrbuilding",
             client_id: client.id,
           });
+          const channels = Array.isArray(channelInfo?.channels)
+            ? channelInfo.channels
+            : [];
+
+          if (channels.length) {
+            await this.messengerChannelsService.joinChannel({
+              channel_id: channels[0].id,
+              client_id: client.id,
+            });
+          }
+        } catch (channelError) {
+          console.log("Messenger channel join skipped", channelError);
         }
       } else {
         next_step = client.webinar_provider_id
