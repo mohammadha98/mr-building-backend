@@ -9,7 +9,7 @@ $files = Get-ChildItem -Path . -Recurse -File | Where-Object {
 }
 
 # جستجوی کلمه localhost داخل فایل‌ها
-$results = $files | Select-String -SimpleMatch "env.APP_PORT"
+$results = $files | Select-String -SimpleMatch "cors"
 
 $count = 0
 foreach ($match in $results) {

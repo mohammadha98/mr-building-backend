@@ -51,7 +51,6 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(
       MainAppModule,
       {
-        cors: true,
         bodyParser: true,
         logger: ["error", "warn", "log", "debug"],
       }
@@ -76,21 +75,19 @@ async function bootstrap() {
     logger.log("🟢 Step 8: Configuring helmet...");
     app.use(
       helmet({
-        crossOriginEmbedderPolicy: true,
-        crossOriginResourcePolicy: true,
-        contentSecurityPolicy: {
-          directives: {
-            defaultSrc: ["*"],
-            scriptSrc: ["* data: 'unsafe-eval' 'unsafe-inline' blob:"],
-          },
-        },
+        crossOriginEmbedderPolicy: false,
+        contentSecurityPolicy: false,
       })
     );
 
     logger.log("🟢 Step 9: Enabling CORS...");
     const corsOptions: CorsOptions = {
-      origin: "*",
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true,
+      allowedHeaders: 'Content-Type, Accept, Authorization',
     };
+
     app.enableCors(corsOptions);
 
     logger.log("🟢 Step 10: Initializing Swagger...");
